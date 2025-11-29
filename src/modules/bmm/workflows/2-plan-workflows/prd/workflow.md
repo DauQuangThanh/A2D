@@ -1,3 +1,8 @@
+---
+name: PRD Workflow
+description: Creates a comprehensive PRDs through collaborative step-by-step discovery between two product managers working as peers.
+---
+
 # PRD Workflow
 
 **Goal:** Create comprehensive PRDs through collaborative step-by-step discovery between two product managers working as peers.
