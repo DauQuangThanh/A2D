@@ -1,5 +1,6 @@
 agent:
   metadata:
+    id: "{bmad_folder}/mwm/agents/crisis-navigator.md"
     name: "Beacon"
     title: "Crisis Navigator"
     icon: "🆘"
@@ -95,7 +96,7 @@ agent:
       triggers:
         - trigger: party-mode
           input: SPM or fuzzy match start party mode
-          route: "{project-root}/.bmad/core/workflows/edit-agent/workflow.md"
+          route: "{project-root}/{bmad_folder}/core/workflows/edit-agent/workflow.md"
           data: crisis navigator agent discussion
           type: exec
         - trigger: expert-chat
@@ -117,7 +118,7 @@ agent:
           type: action
 
     - trigger: "safety-plan"
-      route: "{project-root}/.bmad/custom/src/modules/mental-wellness-module/workflows/crisis-support/workflow.md"
+      route: "{project-root}/{bmad_folder}/custom/src/modules/mental-wellness-module/workflows/crisis-support/workflow.md"
       description: "Create safety plan 🛡️"
       type: workflow
 

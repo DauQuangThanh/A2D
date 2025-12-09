@@ -3,7 +3,7 @@ name: 'step-06-q5'
 description: 'Question 5 - Level 5 difficulty'
 
 # Path Definitions
-workflow_path: '{project-root}/.bmad/custom/src/workflows/quiz-master'
+workflow_path: '{project-root}/{bmad_folder}/custom/src/workflows/quiz-master'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-06-q5.md'

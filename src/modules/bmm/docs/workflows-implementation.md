@@ -133,7 +133,6 @@ The `sprint-status.yaml` file is the single source of truth for all implementati
 ### (BMad Method / Enterprise)
 
 ```
-<<<<<<< Updated upstream
 PRD (PM) → Architecture (Architect)
   → create-epics-and-stories (PM)  ← V6: After architecture!
   → implementation-readiness (Architect)
@@ -142,7 +141,6 @@ PRD (PM) → Architecture (Architect)
       → story loop (SM/DEV)
       → retrospective (SM)
   → [Next Epic]
-=======
 Current Phase: 4 (Implementation)
 Current Epic: Epic 1 (Authentication)
 Current Sprint: Sprint 1
@@ -190,107 +188,11 @@ See: [workflow-status instructions](../workflows/workflow-status/instructions.md
 
 See: [document-project reference](./workflow-document-project-reference.md)
 
----
-
-## Story Lifecycle Visualization
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│ PHASE 4: IMPLEMENTATION (Iterative Story Lifecycle)        │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────┐
-│ Sprint Planning │  → Creates sprint-status.yaml
-└────────┬────────┘     Defines story queue
-         │
-         ├──────────────────────────────────────────┐
-         │                                          │
-         ▼                                          │
-┌─────────────────────┐                            │
-│ Epic Tech Context   │  → Optional per epic       │
-│ (Once per epic)     │     Provides technical     │
-└─────────────────────┘     guidance              │
-         │                                          │
-         ▼                                          │
-┌─────────────────────────────────────────────────┤
-│ FOR EACH STORY IN QUEUE:                        │
-├─────────────────────────────────────────────────┤
-         │                                          │
-         ▼                                          │
-┌─────────────────┐                                │
-│ Create Story    │  → Generates story file        │
-│ (TODO → IN PROGRESS)                            │
-└────────┬────────┘                                │
-         │                                          │
-         ▼                                          │
-┌─────────────────┐                                │
-│ Story Context   │  → Assembles focused context   │
-└────────┬────────┘                                │
-         │                                          │
-         ▼                                          │
-┌─────────────────┐                                │
-│ Dev Story       │  → Implements + tests           │
-│ (IN PROGRESS)   │                                │
-└────────┬────────┘                                │
-         │                                          │
-         ▼                                          │
-┌─────────────────┐                                │
-│ Code Review     │  → Senior dev review            │
-│ (IN PROGRESS →  │                                │
-│  READY FOR REVIEW)                               │
-└────────┬────────┘                                │
-         │                                          │
-    ┌────┴────┐                                    │
-    │ Result? │                                    │
-    └────┬────┘                                    │
-         │                                          │
-    ┌────┼────────────────────┐                   │
-    │    │                    │                   │
-    ▼    ▼                    ▼                   │
-APPROVED  APPROVED           REQUEST              │
-          WITH COMMENTS      CHANGES              │
-    │         │                   │                │
-    └─────────┴───────────────────┘               │
-              │                                    │
-              ▼                                    │
-    ┌─────────────────┐                           │
-    │ Story Done      │  → READY FOR REVIEW → DONE│
-    └────────┬────────┘                           │
-             │                                     │
-             ├─────────────────────────────────────┘
-             │ More stories?
-             │
-             ▼
-    ┌────────────────┐
-    │ Epic Complete? │
-    └────────┬───────┘
-             │
-        ┌────┼────┐
-        │         │
-       Yes       No
-        │         └──> Continue to next story
-        │
-        ▼
-┌─────────────────┐
-│ Retrospective   │  → Review epic, lessons learned
-└─────────────────┘
-        │
-        ▼
-    All epics done?
-        │
-       Yes → PROJECT COMPLETE
->>>>>>> Stashed changes
-```
-
----
-
 ## Related Documentation
 
 - [Phase 1: Analysis Workflows](./workflows-analysis.md)
 - [Phase 2: Planning Workflows](./workflows-planning.md)
 - [Phase 3: Solutioning Workflows](./workflows-solutioning.md)
-
----
 
 ## Troubleshooting
 
@@ -305,7 +207,5 @@ A: Not recommended. Complete one story's full lifecycle before starting the next
 
 **Q: What if code review finds issues?**
 A: DEV runs `dev-story` to make fixes, re-runs tests, then runs `code-review` again until it passes.
-
----
 
 _Phase 4 Implementation - One story at a time, done right._

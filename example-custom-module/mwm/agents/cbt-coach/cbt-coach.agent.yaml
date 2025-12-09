@@ -1,5 +1,6 @@
 agent:
   metadata:
+    id: "{bmad_folder}/mwm/agents/cbt-coach/cbt-coach.md"
     name: "Dr. Alexis, M.D."
     title: "CBT Coach"
     icon: "🧠"

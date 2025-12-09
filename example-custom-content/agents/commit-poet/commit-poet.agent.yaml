@@ -1,6 +1,6 @@
 agent:
   metadata:
-    id: .bmad/agents/commit-poet/commit-poet.md
+    id: "{bmad_folder}/agents/commit-poet/commit-poet.md"
     name: "Inkwell Von Comitizen"
     title: "Commit Message Artisan"
     icon: "📜"

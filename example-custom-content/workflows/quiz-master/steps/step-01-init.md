@@ -3,7 +3,7 @@ name: 'step-01-init'
 description: 'Initialize quiz game with mode selection and category choice'
 
 # Path Definitions
-workflow_path: '{project-root}/.bmad/custom/src/workflows/quiz-master'
+workflow_path: '{project-root}/{bmad_folder}/custom/src/workflows/quiz-master'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-init.md'
@@ -66,7 +66,7 @@ To set up the quiz game by selecting game mode, choosing a category, and prepari
 
 ### 1. Welcome and Configuration Loading
 
-Load config from {project-root}/.bmad/bmb/config.yaml to get user_name.
+Load config from {project-root}/{bmad_folder}/bmb/config.yaml to get user_name.
 
 Present dramatic welcome:
 "🎺 _DRAMATIC MUSIC PLAYS_ 🎺

@@ -19,7 +19,7 @@ A custom agents and workflows package follows this structure:
 
 ```
 my-custom-agents/
-├── custom.yaml          # Package configuration
+├── module.yaml          # Package configuration
 ├── agents/              # Agent definitions
 │   └── my-agent/
 │       └── agent.md
@@ -30,7 +30,7 @@ my-custom-agents/
 
 #### Configuration
 
-Create a `custom.yaml` file in your package root:
+Create a `module.yaml` file in your package root:
 
 ```yaml
 code: my-custom-agents
@@ -41,11 +41,6 @@ default_selected: true
 #### Example
 
 See `/example-custom-content` for a working example of a folder with multiple random custom agents and workflows. Technically its also just a module, but you will be able to further pick and choose from this folders contents of what you do and do not want to include in a destination folder. This way, you can store all custom content source in one location and easily install it to different locations.
-
-```bash
-# The example is ready to use - just rename the config file:
-mv example-custom-content/custom.bak example-custom-content/custom.yaml
-```
 
 ### 2. Custom Modules
 
@@ -122,7 +117,6 @@ If you select "Enter a directory path", the installer will prompt for the locati
 
 The installer will:
 
-- Scan the directory and all subdirectories for the presence of a `custom.yaml` file (standalone content such as agents and workflows)
 - Scan for `module.yaml` files (modules)
 - Display an indication of how many installable folders it has found. Note that a project with stand along agents and workflows all under a single folder like the example will just list the count as 1 for that directory.
 
@@ -224,7 +218,7 @@ Custom content can be distributed:
 
 ### No Custom Content Found
 
-- Ensure your `custom.yaml` or `module.yaml` files are properly named
+- Ensure your `module.yaml` files are properly named
 - Check file permissions
 - Verify the directory path is correct
 

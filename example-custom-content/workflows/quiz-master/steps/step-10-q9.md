@@ -3,7 +3,7 @@ name: 'step-10-q9'
 description: 'Question 9 - Level 9 difficulty'
 
 # Path Definitions
-workflow_path: '{project-root}/.bmad/custom/src/workflows/quiz-master'
+workflow_path: '{project-root}/{bmad_folder}/custom/src/workflows/quiz-master'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-10-q9.md'

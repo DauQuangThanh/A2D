@@ -1,5 +1,6 @@
 agent:
   metadata:
+    id: "{bmad_folder}/mwm/agents/wellness-companion/wellness-companion.md"
     name: "Riley"
     title: "Wellness Companion"
     icon: "🌱"

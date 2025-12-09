@@ -445,17 +445,9 @@ function compileAgent(yamlContent, answers = {}, agentName = '', targetPath = ''
   // Parse YAML
   const agentYaml = yaml.parse(yamlContent);
 
-  // Inject custom agent name into metadata.name if provided
-  // This is the user's chosen persona name (e.g., "Fred" instead of "Inkwell Von Comitizen")
-  if (agentName && agentYaml.agent && agentYaml.agent.metadata) {
-    // Convert kebab-case to title case for the name field
-    // e.g., "fred-commit-poet" → "Fred Commit Poet"
-    const titleCaseName = agentName
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-    agentYaml.agent.metadata.name = titleCaseName;
-  }
+  // Note: agentName parameter is for UI display only, not for modifying the YAML
+  // The persona name (metadata.name) should always come from the YAML file
+  // We should NEVER modify metadata.name as it's part of the agent's identity
 
   // Extract install_config
   const installConfig = extractInstallConfig(agentYaml);

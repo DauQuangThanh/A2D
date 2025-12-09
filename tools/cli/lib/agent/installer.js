@@ -242,7 +242,8 @@ function installAgent(agentInfo, answers, targetPath, options = {}) {
   const { xml, metadata, processedYaml } = compileAgent(fs.readFileSync(agentInfo.yamlFile, 'utf8'), answers);
 
   // Determine target agent folder name
-  const agentFolderName = metadata.name ? metadata.name.toLowerCase().replaceAll(/\s+/g, '-') : agentInfo.name;
+  // Use the folder name from agentInfo, NOT the persona name from metadata
+  const agentFolderName = agentInfo.name;
 
   const agentTargetDir = path.join(targetPath, agentFolderName);
 

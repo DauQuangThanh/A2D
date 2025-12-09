@@ -1,6 +1,6 @@
 agent:
   metadata:
-    id: custom/agents/toolsmith/toolsmith.md
+    id: "{bmad_folder}/agents/toolsmith/toolsmith.md"
     name: Vexor
     title: Infernal Toolsmith + Guardian of the BMAD Forge
     icon: ⚒️

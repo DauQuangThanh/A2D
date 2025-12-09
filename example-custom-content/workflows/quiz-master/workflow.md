@@ -45,7 +45,7 @@ web_bundle: true
 
 ### 1. Module Configuration Loading
 
-Load and read full config from {project-root}/.bmad/bmb/config.yaml and resolve:
+Load and read full config from {project-root}/{bmad_folder}/bmb/config.yaml and resolve:
 
 - `user_name`, `output_folder`, `communication_language`, `document_output_language`
 

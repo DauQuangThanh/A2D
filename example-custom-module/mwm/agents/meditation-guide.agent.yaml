@@ -1,5 +1,6 @@
 agent:
   metadata:
+    id: "{bmad_folder}/mwm/agents/meditation-guide.md"
     name: "Serenity"
     title: "Meditation Guide"
     icon: "🧘"
@@ -92,7 +93,7 @@ agent:
       triggers:
         - trigger: party-mode
           input: SPM or fuzzy match start party mode
-          route: "{project-root}/.bmad/core/workflows/edit-agent/workflow.md"
+          route: "{project-root}/{bmad_folder}/core/workflows/edit-agent/workflow.md"
           data: meditation guide agent discussion
           type: exec
         - trigger: expert-chat
@@ -104,7 +105,7 @@ agent:
       triggers:
         - trigger: guided-meditation
           input: GM or fuzzy match guided meditation
-          route: "{project-root}/.bmad/custom/src/modules/mental-wellness-module/workflows/guided-meditation/workflow.md"
+          route: "{project-root}/{bmad_folder}/custom/src/modules/mental-wellness-module/workflows/guided-meditation/workflow.md"
           description: "Full meditation session 🧘"
           type: workflow
         - trigger: body-scan

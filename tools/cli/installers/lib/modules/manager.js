@@ -391,8 +391,8 @@ class ModuleManager {
           if (config.code === moduleName) {
             return modulePath;
           }
-        } catch {
-          // Skip if can't read config
+        } catch (error) {
+          throw new Error(`Failed to parse module.yaml at ${configPath}: ${error.message}`);
         }
       }
     }
@@ -853,8 +853,13 @@ class ModuleManager {
         // Compile with customizations if any
         const { xml } = compileAgent(yamlContent, {}, agentName, relativePath, { config: this.coreConfig });
 
-        // Write the compiled MD file
-        await fs.writeFile(targetMdPath, xml, 'utf8');
+        // Replace {bmad_folder} placeholder if needed
+        if (xml.includes('{bmad_folder}') && this.bmadFolderName) {
+          const processedXml = xml.replaceAll('{bmad_folder}', this.bmadFolderName);
+          await fs.writeFile(targetMdPath, processedXml, 'utf8');
+        } else {
+          await fs.writeFile(targetMdPath, xml, 'utf8');
+        }
 
         // Copy sidecar files if agent has hasSidecar flag
         if (hasSidecar) {
