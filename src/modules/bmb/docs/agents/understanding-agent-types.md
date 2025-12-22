@@ -7,7 +7,7 @@ ALL agent types can:
 - ✓ Write to {output_folder}, {project-root}, or anywhere on system
 - ✓ Update artifacts and files
 - ✓ Execute bash commands
-- ✓ Use core variables (.bmad, {output_folder}, etc.)
+- ✓ Use core variables (\_bmad, {output_folder}, etc.)
 - ✓ Have complex prompts and logic
 - ✓ Invoke external tools
 
@@ -98,11 +98,11 @@ agent:
 
   menu:
     - trigger: implement-story
-      workflow: '.bmad/bmm/workflows/dev-story/workflow.yaml'
+      workflow: '_bmad/bmm/workflows/dev-story/workflow.yaml'
       description: Implement user story
 
     - trigger: refactor
-      workflow: '.bmad/bmm/workflows/refactor/workflow.yaml'
+      workflow: '_bmad/bmm/workflows/refactor/workflow.yaml'
       description: Refactor codebase
 ```
 
@@ -122,7 +122,7 @@ agent:
 ### The Reality
 
 - **Any agent type** (Simple, Expert, Module) can be bundled with or added to a module
-- A Simple agent COULD live in `.bmad/bmm/agents/`
+- A Simple agent COULD live in `_bmad/bmm/agents/`
 - An Expert agent COULD be included in a module bundle
 
 ### What Makes a "Module Agent" Special
@@ -138,14 +138,14 @@ A **Module Agent** is specifically:
 
 **Simple Agent added to BMM:**
 
-- Lives in `.bmad/bmm/agents/formatter.agent.yaml`
+- Lives in `_bmad/bmm/agents/formatter.agent.yaml`
 - Bundled with BMM for convenience
 - But still stateless, self-contained
 - NOT a "Module Agent" - just a Simple agent in a module
 
 **Module Agent in BMM:**
 
-- Lives in `.bmad/bmm/agents/tech-writer.agent.yaml`
+- Lives in `_bmad/bmm/agents/tech-writer.agent.yaml`
 - Orchestrates BMM documentation workflows
 - Coordinates with other BMM agents (PM, Dev, Analyst)
 - Included in default BMM bundle

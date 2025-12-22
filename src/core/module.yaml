@@ -1,32 +1,25 @@
-header: "BMAD™ Core Configuration"
-subheader: "Configure the core settings for your BMAD™ installation.\nThese settings will be used across all modules and agents."
+code: core
+name: "BMad™  Core Module"
+
+header: "BMad™  Core Configuration"
+subheader: "Configure the core settings for your BMad™  installation.\nThese settings will be used across all modules and agents."
 
 user_name:
-  prompt: "What shall the agents call you?"
+  prompt: "What shall the agents call you (TIP: Use a team name if using with a group)?"
   default: "BMad"
   result: "{value}"
 
 communication_language:
-  prompt: "Preferred Chat Language/Style? (English, Mandarin, English Pirate, etc...)"
+  prompt: "Preferred chat language/style? (English, Mandarin, English Pirate, etc...)"
   default: "English"
   result: "{value}"
 
 document_output_language:
-  prompt: "Preferred Document Output Language?"
-  default: "{communication_language}"
+  prompt: "Preferred document output language?"
+  default: "English"
   result: "{value}"
-
-agent_sidecar_folder:
-  prompt: "Where should users agent sidecar memory folders be stored?"
-  default: ".bmad-user-memory"
-  result: "{project-root}/{value}"
 
 output_folder:
-  prompt: "Where should AI Generated Artifacts be saved across all modules?"
-  default: "docs"
+  prompt: "Where should default output files be saved unless specified in other modules?"
+  default: "_bmad-output"
   result: "{project-root}/{value}"
-
-install_user_docs:
-  prompt: "Install user documentation and optimized agent intelligence to each selected modules docs folder?"
-  default: true
-  result: "{value}"

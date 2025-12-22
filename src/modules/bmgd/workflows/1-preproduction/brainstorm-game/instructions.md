@@ -1,4 +1,4 @@
-<critical>The workflow execution engine is governed by: {project_root}/.bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project_root}/\_bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language}</critical>
 <critical>This is a meta-workflow that orchestrates the CIS brainstorming workflow with game-specific context and additional game design techniques</critical>
@@ -8,7 +8,7 @@
 <workflow>
 
   <step n="1" goal="Validate workflow readiness" tag="workflow-status">
-    <action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
+    <action>Check if {output_folder}/bmgd-workflow-status.yaml exists</action>
 
     <check if="status file not found">
       <output>No workflow status file found. Game brainstorming is optional - you can continue without status tracking.</output>
@@ -16,7 +16,7 @@
     </check>
 
     <check if="status file found">
-      <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
+      <action>Load the FULL file: {output_folder}/bmgd-workflow-status.yaml</action>
       <action>Parse workflow_status section</action>
       <action>Check status of "brainstorm-game" workflow</action>
       <action>Get project_level from YAML metadata</action>
@@ -85,7 +85,7 @@
 
   <step n="4" goal="Update status and complete" tag="workflow-status">
     <check if="standalone_mode != true">
-      <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
+      <action>Load the FULL file: {output_folder}/bmgd-workflow-status.yaml</action>
       <action>Find workflow_status key "brainstorm-game"</action>
       <critical>ONLY write the file path as the status value - no other text, notes, or metadata</critical>
       <action>Update workflow_status["brainstorm-game"] = "{output_folder}/bmm-brainstorming-session-{{date}}.md"</action>

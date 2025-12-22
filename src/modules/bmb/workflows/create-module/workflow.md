@@ -2,7 +2,7 @@
 name: create-module
 description: 'Interactive workflow to build complete BMAD modules with agents, workflows, and installation infrastructure'
 web_bundle: true
-installed_path: '{project-root}/.bmad/bmb/workflows/create-module'
+installed_path: '{project-root}/_bmad/bmb/workflows/create-module'
 ---
 
 # Create Module Workflow
@@ -46,9 +46,9 @@ installed_path: '{project-root}/.bmad/bmb/workflows/create-module'
 
 ### 1. Module Configuration Loading
 
-Load and read full config from {project-root}/.bmad/bmb/config.yaml and resolve:
+Load and read full config from {project-root}/\_bmad/bmb/config.yaml and resolve:
 
-- `project_name`, `output_folder`, `user_name`, `communication_language`, `document_output_language`, `custom_module_location`
+- `project_name`, `output_folder`, `user_name`, `communication_language`, `document_output_language`, `bmb_creations_output_folder`
 
 ### 2. First Step EXECUTION
 

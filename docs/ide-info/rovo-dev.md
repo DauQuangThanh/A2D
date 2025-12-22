@@ -55,7 +55,7 @@ project-root/
 │   ├── config.yml          (Rovo Dev configuration)
 │   ├── prompts.yml         (Optional: reusable prompts)
 │   └── ...
-├── .bmad/                  (BMAD installation directory)
+├── _bmad/                  (BMAD installation directory)
 └── ...
 ```
 

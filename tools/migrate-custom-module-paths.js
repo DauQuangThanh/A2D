@@ -12,7 +12,7 @@ const chalk = require('chalk');
  * Find BMAD directory in project
  */
 function findBmadDir(projectDir = process.cwd()) {
-  const possibleNames = ['.bmad'];
+  const possibleNames = ['_bmad'];
 
   for (const name of possibleNames) {
     const bmadDir = path.join(projectDir, name);
@@ -95,7 +95,7 @@ async function migrate(directory) {
   console.log(chalk.dim(`Project: ${projectRoot}`));
   console.log(chalk.dim(`BMAD Directory: ${bmadDir}`));
 
-  const manifestPath = path.join(bmadDir, '_cfg', 'manifest.yaml');
+  const manifestPath = path.join(bmadDir, '_config', 'manifest.yaml');
 
   if (!fs.existsSync(manifestPath)) {
     console.error(chalk.red('✗ No manifest.yaml found'));

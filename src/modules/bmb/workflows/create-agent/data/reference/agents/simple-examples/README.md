@@ -127,7 +127,7 @@ This personality is maintained across ALL commands through the persona definitio
 ```yaml
 agent:
   metadata:
-    id: .bmad/agents/{agent-name}/{agent-name}.md  # Build path
+    id: _bmad/agents/{agent-name}/{agent-name}.md  # Build path
     name: "Display Name"
     title: "Professional Title"
     icon: "🎭"

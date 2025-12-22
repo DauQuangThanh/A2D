@@ -1,10 +1,10 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 
 /**
  * Manages IDE configuration persistence
- * Saves and loads IDE-specific configurations to/from bmad/_cfg/ides/
+ * Saves and loads IDE-specific configurations to/from bmad/_config/ides/
  */
 class IdeConfigManager {
   constructor() {}
@@ -15,7 +15,7 @@ class IdeConfigManager {
    * @returns {string} Path to IDE config directory
    */
   getIdeConfigDir(bmadDir) {
-    return path.join(bmadDir, '_cfg', 'ides');
+    return path.join(bmadDir, '_config', 'ides');
   }
 
   /**
@@ -61,10 +61,12 @@ class IdeConfigManager {
       configuration: configuration || {},
     };
 
-    const yamlContent = yaml.dump(configData, {
+    // Clean the config to remove any non-serializable values (like functions)
+    const cleanConfig = structuredClone(configData);
+
+    const yamlContent = yaml.stringify(cleanConfig, {
       indent: 2,
-      lineWidth: -1,
-      noRefs: true,
+      lineWidth: 0,
       sortKeys: false,
     });
 
@@ -88,7 +90,7 @@ class IdeConfigManager {
 
     try {
       const content = await fs.readFile(configPath, 'utf8');
-      const config = yaml.load(content);
+      const config = yaml.parse(content);
       return config;
     } catch (error) {
       console.warn(`Warning: Failed to load IDE config for ${ideName}:`, error.message);

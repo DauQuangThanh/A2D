@@ -1,6 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 const { Manifest } = require('./manifest');
 
 class Detector {
@@ -49,7 +49,7 @@ class Detector {
       if (await fs.pathExists(coreConfigPath)) {
         try {
           const configContent = await fs.readFile(coreConfigPath, 'utf8');
-          const config = yaml.load(configContent);
+          const config = yaml.parse(configContent);
           if (!result.version && config.version) {
             result.version = config.version;
           }
@@ -77,7 +77,7 @@ class Detector {
         if (await fs.pathExists(moduleConfigPath)) {
           try {
             const configContent = await fs.readFile(moduleConfigPath, 'utf8');
-            const config = yaml.load(configContent);
+            const config = yaml.parse(configContent);
             moduleInfo.version = config.version || 'unknown';
             moduleInfo.name = config.name || moduleId;
             moduleInfo.description = config.description;
@@ -92,7 +92,7 @@ class Detector {
       // Fallback: scan directory for modules (legacy installations without manifest)
       const entries = await fs.readdir(bmadDir, { withFileTypes: true });
       for (const entry of entries) {
-        if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_cfg') {
+        if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_config') {
           const modulePath = path.join(bmadDir, entry.name);
           const moduleConfigPath = path.join(modulePath, 'config.yaml');
 
@@ -106,7 +106,7 @@ class Detector {
 
             try {
               const configContent = await fs.readFile(moduleConfigPath, 'utf8');
-              const config = yaml.load(configContent);
+              const config = yaml.parse(configContent);
               moduleInfo.version = config.version || 'unknown';
               moduleInfo.name = config.name || entry.name;
               moduleInfo.description = config.description;
@@ -135,7 +135,7 @@ class Detector {
   }
 
   /**
-   * Detect legacy installation (.bmad-method, .bmm, .cis)
+   * Detect legacy installation (_bmad-method, .bmm, .cis)
    * @param {string} projectDir - Project directory to check
    * @returns {Object} Legacy installation details
    */
@@ -147,8 +147,8 @@ class Detector {
       paths: [],
     };
 
-    // Check for legacy core (.bmad-method)
-    const legacyCorePath = path.join(projectDir, '.bmad-method');
+    // Check for legacy core (_bmad-method)
+    const legacyCorePath = path.join(projectDir, '_bmad-method');
     if (await fs.pathExists(legacyCorePath)) {
       result.hasLegacy = true;
       result.legacyCore = true;
@@ -161,7 +161,7 @@ class Detector {
       if (
         entry.isDirectory() &&
         entry.name.startsWith('.') &&
-        entry.name !== '.bmad-method' &&
+        entry.name !== '_bmad-method' &&
         !entry.name.startsWith('.git') &&
         !entry.name.startsWith('.vscode') &&
         !entry.name.startsWith('.idea')
@@ -204,8 +204,8 @@ class Detector {
 
   /**
    * Detect legacy BMAD v4 footprints (case-sensitive path checks)
-   * V4 used .bmad-method as default folder name
-   * V6+ uses configurable folder names and ALWAYS has _cfg/manifest.yaml with installation.version
+   * V4 used _bmad-method as default folder name
+   * V6+ uses configurable folder names and ALWAYS has _config/manifest.yaml with installation.version
    * @param {string} projectDir - Project directory to check
    * @returns {{ hasLegacyV4: boolean, offenders: string[] }}
    */
@@ -232,14 +232,14 @@ class Detector {
 
     // Helper: check if a directory is a V6+ installation
     const isV6Installation = async (dirPath) => {
-      const manifestPath = path.join(dirPath, '_cfg', 'manifest.yaml');
+      const manifestPath = path.join(dirPath, '_config', 'manifest.yaml');
       if (!(await fs.pathExists(manifestPath))) {
         return false;
       }
       try {
-        const yaml = require('js-yaml');
+        const yaml = require('yaml');
         const manifestContent = await fs.readFile(manifestPath, 'utf8');
-        const manifest = yaml.load(manifestContent);
+        const manifest = yaml.parse(manifestContent);
         // V6+ manifest has installation.version
         return manifest && manifest.installation && manifest.installation.version;
       } catch {
@@ -250,7 +250,7 @@ class Detector {
     const offenders = [];
 
     // Strategy:
-    // 1. First scan for ANY V6+ installation (_cfg/manifest.yaml)
+    // 1. First scan for ANY V6+ installation (_config/manifest.yaml)
     // 2. If V6+ found → don't flag anything (user is already on V6+)
     // 3. If NO V6+ found → flag folders with "bmad" in name as potential V4 legacy
 
@@ -271,7 +271,7 @@ class Detector {
             continue; // Skip empty folders
           }
 
-          // Check if it's a V6+ installation by looking for _cfg/manifest.yaml
+          // Check if it's a V6+ installation by looking for _config/manifest.yaml
           // This works for ANY folder name (not just bmad-prefixed)
           const isV6 = await isV6Installation(fullPath);
 

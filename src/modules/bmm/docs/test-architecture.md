@@ -155,22 +155,6 @@ Epic/Release Gate → TEA: *nfr-assess, *trace Phase 2 (release decision)
 
 **Note**: `*trace` is a two-phase workflow: Phase 1 (traceability) + Phase 2 (gate decision). This reduces cognitive load while maintaining natural workflow.
 
-### Unique Directory Architecture
-
-TEA is the only BMM agent with its own top-level module directory (`bmm/testarch/`):
-
-```
-src/modules/bmm/
-├── agents/
-│   └── tea.agent.yaml          # Agent definition (standard location)
-├── workflows/
-│   └── testarch/               # TEA workflows (standard location)
-└── testarch/                   # Knowledge base (UNIQUE!)
-    ├── knowledge/              # 21 production-ready test pattern fragments
-    ├── tea-index.csv           # Centralized knowledge lookup (21 fragments indexed)
-    └── README.md               # This guide
-```
-
 ### Why TEA Gets Special Treatment
 
 TEA uniquely requires:
@@ -406,7 +390,7 @@ MCP provides additional capabilities on top of TEA's default AI-based approach:
 }
 ```
 
-**To disable**: Set `tea_use_mcp_enhancements: false` in `.bmad/bmm/config.yaml` OR remove MCPs from IDE config.
+**To disable**: Set `tea_use_mcp_enhancements: false` in `_bmad/bmm/config.yaml` OR remove MCPs from IDE config.
 
 </details>
 
@@ -448,9 +432,9 @@ Provides fixture-based utilities that integrate into TEA's test generation and r
 
 **Utilities available** (11 total): api-request, network-recorder, auth-session, intercept-network-call, recurse, log, file-utils, burn-in, network-error-monitor, fixtures-composition
 
-**Enable during BMAD installation** by answering "Yes" when prompted, or manually set `tea_use_playwright_utils: true` in `.bmad/bmm/config.yaml`.
+**Enable during BMAD installation** by answering "Yes" when prompted, or manually set `tea_use_playwright_utils: true` in `_bmad/bmm/config.yaml`.
 
-**To disable**: Set `tea_use_playwright_utils: false` in `.bmad/bmm/config.yaml`.
+**To disable**: Set `tea_use_playwright_utils: false` in `_bmad/bmm/config.yaml`.
 
 </details>
 

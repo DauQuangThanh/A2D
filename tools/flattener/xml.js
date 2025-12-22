@@ -1,11 +1,5 @@
 const fs = require('fs-extra');
-
-function escapeXml(string_) {
-  if (typeof string_ !== 'string') {
-    return String(string_);
-  }
-  return string_.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll("'", '&apos;');
-}
+const { escapeXml } = require('../lib/xml-utils');
 
 function indentFileContent(content) {
   if (typeof content !== 'string') {

@@ -3,13 +3,13 @@ name: 'step-09-complete'
 description: 'Final completion and wrap-up of workflow creation process'
 
 # Path Definitions
-workflow_path: '{project-root}/.bmad/bmb/workflows/create-workflow'
+workflow_path: '{project-root}/_bmad/bmb/workflows/create-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-09-complete.md'
 workflowFile: '{workflow_path}/workflow.md'
 # Output files for workflow creation process
-targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}'
+targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 completionFile: '{targetWorkflowPath}/completion-summary-{new_workflow_name}.md'
 ---

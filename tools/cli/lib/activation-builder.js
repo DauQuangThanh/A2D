@@ -7,13 +7,13 @@ const { getSourcePath } = require('./project-root');
  */
 class ActivationBuilder {
   constructor() {
-    this.fragmentsDir = getSourcePath('utility', 'models', 'fragments');
+    this.agentComponents = getSourcePath('utility', 'agent-components');
     this.fragmentCache = new Map();
   }
 
   /**
    * Load a fragment file
-   * @param {string} fragmentName - Name of fragment file (e.g., 'activation-init.xml')
+   * @param {string} fragmentName - Name of fragment file (e.g., 'activation-init.txt')
    * @returns {string} Fragment content
    */
   async loadFragment(fragmentName) {
@@ -22,7 +22,7 @@ class ActivationBuilder {
       return this.fragmentCache.get(fragmentName);
     }
 
-    const fragmentPath = path.join(this.fragmentsDir, fragmentName);
+    const fragmentPath = path.join(this.agentComponents, fragmentName);
 
     if (!(await fs.pathExists(fragmentPath))) {
       throw new Error(`Fragment not found: ${fragmentName}`);
@@ -49,7 +49,7 @@ class ActivationBuilder {
     activation += this.indent(steps, 2) + '\n';
 
     // 2. Build menu handlers section with dynamic handlers
-    const menuHandlers = await this.loadFragment('menu-handlers.xml');
+    const menuHandlers = await this.loadFragment('menu-handlers.txt');
 
     // Build handlers (load only needed handlers)
     const handlers = await this.buildHandlers(profile);
@@ -63,11 +63,8 @@ class ActivationBuilder {
 
     activation += '\n' + this.indent(processedHandlers, 2) + '\n';
 
-    // 3. Include rules (skip for web bundles as they're in web-bundle-activation-steps.xml)
-    if (!forWebBundle) {
-      const rules = await this.loadFragment('activation-rules.xml');
-      activation += this.indent(rules, 2) + '\n';
-    }
+    const rules = await this.loadFragment('activation-rules.txt');
+    activation += this.indent(rules, 2) + '\n';
 
     activation += '</activation>';
 
@@ -83,7 +80,7 @@ class ActivationBuilder {
     const handlerFragments = [];
 
     for (const attrType of profile.usedAttributes) {
-      const fragmentName = `handler-${attrType}.xml`;
+      const fragmentName = `handler-${attrType}.txt`;
       try {
         const handler = await this.loadFragment(fragmentName);
         handlerFragments.push(handler);
@@ -103,9 +100,7 @@ class ActivationBuilder {
    * @returns {string} Steps XML
    */
   async buildSteps(metadata = {}, agentSpecificActions = [], forWebBundle = false) {
-    // Use web-specific fragment for web bundles, standard fragment otherwise
-    const fragmentName = forWebBundle ? 'web-bundle-activation-steps.xml' : 'activation-steps.xml';
-    const stepsTemplate = await this.loadFragment(fragmentName);
+    const stepsTemplate = await this.loadFragment('activation-steps.txt');
 
     // Extract basename from agent ID (e.g., "bmad/bmm/agents/pm.md" → "pm")
     const agentBasename = metadata.id ? metadata.id.split('/').pop().replace('.md', '') : metadata.name || 'agent';

@@ -10,14 +10,14 @@ BMad v6 represents a complete ground-up rewrite with significant architectural c
 
 When you run `npm run install:bmad` on a project with v4 installed, the installer automatically detects:
 
-- **Legacy folders**: Any folders starting with `.bmad`, `bmad` (lowercase), or `Bmad`
+- **Legacy folders**: Any folders starting with `_bmad`, `bmad` (lowercase), or `Bmad`
 - **IDE command artifacts**: Legacy bmad folders in IDE configuration directories (`.claude/commands/`, `.cursor/commands/`, etc.)
 
 ### What Happens During Detection
 
-1. **Automatic Backup of v4 Modules**: All `.bmad-*` folders are moved to `v4-backup/` in your project root
+1. **Automatic Backup of v4 Modules**: All `_bmad-*` folders are moved to `v4-backup/` in your project root
    - If a backup already exists, a timestamp is added to avoid conflicts
-   - Example: `.bmad-core` → `v4-backup/.bmad-core`
+   - Example: `_bmad-core` → `v4-backup/_bmad-core`
    - Your project files and data are NOT affected
 
 2. **IDE Command Cleanup Recommended**: Legacy v4 IDE commands should be manually removed
@@ -34,12 +34,12 @@ When you run `npm run install:bmad` on a project with v4 installed, the installe
 
 | v4 Module                     | v6 Status                                        |
 | ----------------------------- | ------------------------------------------------ |
-| `.bmad-2d-phaser-game-dev`    | Integrated into BMM                              |
-| `.bmad-2d-unity-game-dev`     | Integrated into BMM                              |
-| `.bmad-godot-game-dev`        | Integrated into BMM                              |
-| `.bmad-*-game-dev` (any)      | Integrated into BMM                              |
-| `.bmad-infrastructure-devops` | Deprecated - New core devops agent coming in BMM |
-| `.bmad-creative-writing`      | Not adapted - New module releasing soon          |
+| `_bmad-2d-phaser-game-dev`    | Integrated into BMM                              |
+| `_bmad-2d-unity-game-dev`     | Integrated into BMM                              |
+| `_bmad-godot-game-dev`        | Integrated into BMM                              |
+| `_bmad-*-game-dev` (any)      | Integrated into BMM                              |
+| `_bmad-infrastructure-devops` | Deprecated - New core devops agent coming in BMM |
+| `_bmad-creative-writing`      | Not adapted - New module releasing soon          |
 
 **Game Development**: All game development functionality has been consolidated and expanded within the BMM (BMad Method) module. Game-specific workflows now adapt to your game type and engine.
 
@@ -53,30 +53,30 @@ When you run `npm run install:bmad` on a project with v4 installed, the installe
 
 ```
 your-project/
-├── .bmad-core/           # Was actually the BMad Method
-├── .bmad-game-dev/       # Separate expansion packs
-├── .bmad-creative-writing/
-└── .bmad-infrastructure-devops/
+├── _bmad-core/           # Was actually the BMad Method
+├── _bmad-game-dev/       # Separate expansion packs
+├── _bmad-creative-writing/
+└── _bmad-infrastructure-devops/
 ```
 
 **v6 Unified Structure:**
 
 ```
 your-project/
-└── .bmad/       # Single installation folder, default .bmad
+└── _bmad/       # Single installation folder, default _bmad
     ├── core/            # Real core framework (applies to all modules)
     ├── bmm/             # BMad Method (software/game dev)
     ├── bmb/             # BMad Builder (create agents/workflows)
     ├── cis/             # Creative Intelligence Suite
-    └── _cfg/            # Your customizations
+    └── _config/            # Your customizations
         └── agents/      # Agent customization files
 ```
 
 ### Key Concept Changes
 
-- **v4 `.bmad-core`**: Was actually the BMad Method
-- **v6 `.bmad/core/`**: Is the real universal core framework
-- **v6 `.bmad/bmm/`**: Is the BMad Method module
+- **v4 `_bmad-core`**: Was actually the BMad Method
+- **v6 `_bmad/core/`**: Is the real universal core framework
+- **v6 `_bmad/bmm/`**: Is the BMad Method module
 - **Module identification**: All modules now have a `config.yaml` file
 
 ---
@@ -110,15 +110,15 @@ After running the v6 installer:
 
 ### v4 Agent Customization
 
-In v4, you may have modified agent files directly in `.bmad-*` folders.
+In v4, you may have modified agent files directly in `_bmad-*` folders.
 
 ### v6 Agent Customization
 
-**All customizations** now go in `.bmad/_cfg/agents/` using customize files:
+**All customizations** now go in `_bmad/_config/agents/` using customize files:
 
 **Example: Renaming an agent and changing communication style**
 
-File: `.bmad/_cfg/agents/bmm-pm.customize.yaml`
+File: `_bmad/_config/agents/bmm-pm.customize.yaml`
 
 ```yaml
 # Customize the PM agent
@@ -133,8 +133,8 @@ persona:
 
 **How it works:**
 
-- Base agent: `.bmad/bmm/agents/pm.md`
-- Customization: `.bmad/_cfg/agents/bmm-pm.customize.yaml`
+- Base agent: `_bmad/bmm/agents/pm.md`
+- Customization: `_bmad/_config/agents/bmm-pm.customize.yaml`
 - Result: Agent uses your custom name and style, but updates don't overwrite your changes
 
 ---
@@ -176,7 +176,7 @@ npx bmad-method install
 
 The installer will:
 
-1. Detect v4 installation and offer to backup `.bmad-*` folders
+1. Detect v4 installation and offer to backup `_bmad-*` folders
 2. Prompt for recommended cleanup (you can skip)
 3. Let you select modules (recommend: BMM for software and or game development)
 4. Configure core settings (name, language, etc.)
@@ -212,9 +212,9 @@ Since you are migrating an existing project from v4, it's most likely **Level 3 
 ## Post-Migration Checklist
 
 - [ ] v4 folders backed up to `v4-backup/`
-- [ ] v6 installed to `.bmad/` folder
+- [ ] v6 installed to `_bmad/` folder
 - [ ] `workflow-init` run with correct project level selected
-- [ ] Agent customizations migrated to `.bmad/_cfg/agents/` if needed
+- [ ] Agent customizations migrated to `_bmad/_config/agents/` if needed
 - [ ] IDE integration working (test by listing agents)
 - [ ] For active development: `sprint-planning` workflow executed
 
@@ -224,4 +224,4 @@ Since you are migrating an existing project from v4, it's most likely **Level 3 
 
 - **Discord**: [Join the BMad Community](https://discord.gg/gk8jAdXWmj)
 - **Issues**: [GitHub Issue Tracker](https://github.com/bmad-code-org/BMAD-METHOD/issues)
-- **Docs**: Check `.bmad/docs/` in your installation for IDE-specific instructions
+- **Docs**: Check `_bmad/docs/` in your installation for IDE-specific instructions

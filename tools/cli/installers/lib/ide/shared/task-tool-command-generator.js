@@ -85,7 +85,7 @@ Follow all instructions in the ${type} file exactly as written.
    * Load task manifest CSV
    */
   async loadTaskManifest(bmadDir) {
-    const manifestPath = path.join(bmadDir, '_cfg', 'task-manifest.csv');
+    const manifestPath = path.join(bmadDir, '_config', 'task-manifest.csv');
 
     if (!(await fs.pathExists(manifestPath))) {
       return null;
@@ -102,7 +102,7 @@ Follow all instructions in the ${type} file exactly as written.
    * Load tool manifest CSV
    */
   async loadToolManifest(bmadDir) {
-    const manifestPath = path.join(bmadDir, '_cfg', 'tool-manifest.csv');
+    const manifestPath = path.join(bmadDir, '_config', 'tool-manifest.csv');
 
     if (!(await fs.pathExists(manifestPath))) {
       return null;

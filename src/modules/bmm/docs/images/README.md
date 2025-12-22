@@ -23,7 +23,7 @@ When you edit `workflow-method-greenfield.excalidraw`, regenerate the SVG:
 After regenerating the SVG, validate that it renders correctly:
 
 ```bash
-./tools/validate-svg-changes.sh src/modules/bmm/docs/images/workflow-method-greenfield.svg
+./tools/validate-svg-changes.sh path/to/workflow-method-greenfield.svg
 ```
 
 This script:

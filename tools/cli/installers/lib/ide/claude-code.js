@@ -44,12 +44,12 @@ class ClaudeCodeSetup extends BaseIdeSetup {
       const injectionConfigPath = path.join(sourceModulesPath, moduleName, 'sub-modules', 'claude-code', 'injections.yaml');
 
       if (await this.exists(injectionConfigPath)) {
-        const yaml = require('js-yaml');
+        const yaml = require('yaml');
 
         try {
           // Load injection configuration
           const configContent = await fs.readFile(injectionConfigPath, 'utf8');
-          const injectionConfig = yaml.load(configContent);
+          const injectionConfig = yaml.parse(configContent);
 
           // Ask about subagents if they exist and we haven't asked yet
           if (injectionConfig.subagents && !config.subagentChoices) {
@@ -118,7 +118,7 @@ class ClaudeCodeSetup extends BaseIdeSetup {
     await this.ensureDir(bmadCommandsDir);
 
     // Generate agent launchers using AgentCommandGenerator
-    // This creates small launcher files that reference the actual agents in .bmad/
+    // This creates small launcher files that reference the actual agents in _bmad/
     const agentGen = new AgentCommandGenerator(this.bmadFolderName);
     const { artifacts: agentArtifacts, counts: agentCounts } = await agentGen.collectAgentArtifacts(bmadDir, options.selectedModules || []);
 

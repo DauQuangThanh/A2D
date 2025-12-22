@@ -44,18 +44,7 @@ class XmlHandler {
    * @returns {Object} Parsed activation block
    */
   async loadActivationTemplate() {
-    const templatePath = getSourcePath('utility', 'models', 'agent-activation-ide.xml');
-
-    try {
-      const xmlContent = await fs.readFile(templatePath, 'utf8');
-
-      // Parse the XML directly (file is now pure XML)
-      const parsed = await this.parser.parseStringPromise(xmlContent);
-      return parsed.activation;
-    } catch (error) {
-      console.error('Failed to load activation template:', error);
-      return null;
-    }
+    console.error('Failed to load activation template:', error);
   }
 
   /**
@@ -136,51 +125,10 @@ class XmlHandler {
   }
 
   /**
-   * Simple string-based injection (fallback method for legacy XML agents)
-   * This preserves formatting better than XML parsing
+   * TODO: DELETE THIS METHOD
    */
   injectActivationSimple(agentContent, metadata = {}) {
-    // Check if already has activation
-    if (agentContent.includes('<activation')) {
-      return agentContent;
-    }
-
-    // Load template file
-    const templatePath = getSourcePath('utility', 'models', 'agent-activation-ide.xml');
-
-    try {
-      const templateContent = fs.readFileSync(templatePath, 'utf8');
-
-      // The file is now pure XML, use it directly with proper indentation
-      // Add 2 spaces of indentation for insertion into agent
-      let activationBlock = templateContent
-        .split('\n')
-        .map((line) => (line ? '  ' + line : ''))
-        .join('\n');
-
-      // Replace {agent-filename} with actual filename if metadata provided
-      if (metadata.module && metadata.name) {
-        const agentFilename = `${metadata.module}-${metadata.name}.md`;
-        activationBlock = activationBlock.replace('{agent-filename}', agentFilename);
-      }
-
-      // Find where to insert (after <agent> tag)
-      const agentMatch = agentContent.match(/(<agent[^>]*>)/);
-      if (!agentMatch) {
-        return agentContent;
-      }
-
-      const insertPos = agentMatch.index + agentMatch[0].length;
-
-      // Insert the activation block
-      const before = agentContent.slice(0, insertPos);
-      const after = agentContent.slice(insertPos);
-
-      return before + '\n' + activationBlock + after;
-    } catch (error) {
-      console.error('Error in simple injection:', error);
-      return agentContent;
-    }
+    console.error('Error in simple injection:', error);
   }
 
   /**

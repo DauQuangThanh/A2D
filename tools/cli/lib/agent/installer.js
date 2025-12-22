@@ -17,7 +17,7 @@ const { extractInstallConfig, getDefaultValues } = require('./template-engine');
  */
 function findBmadConfig(startPath = process.cwd()) {
   // Look for common BMAD folder names
-  const possibleNames = ['.bmad', 'bmad', '.bmad-method'];
+  const possibleNames = ['_bmad'];
 
   for (const name of possibleNames) {
     const configPath = path.join(startPath, name, 'bmb', 'config.yaml');
@@ -42,7 +42,7 @@ function findBmadConfig(startPath = process.cwd()) {
  * @returns {string} Resolved path
  */
 function resolvePath(pathStr, context) {
-  return pathStr.replaceAll('{project-root}', context.projectRoot).replaceAll('{bmad-folder}', context.bmadFolder);
+  return pathStr.replaceAll('{project-root}', context.projectRoot).replaceAll('{bmad-folder}', context_bmadFolder);
 }
 
 /**
@@ -262,127 +262,9 @@ function installAgent(agentInfo, answers, targetPath, options = {}) {
     agentName: metadata.name || agentInfo.name,
     targetDir: agentTargetDir,
     compiledFile: compiledPath,
-    sidecarCopied: false,
   };
 
-  // Handle sidecar files for agents with hasSidecar flag
-  if (agentInfo.hasSidecar === true && agentInfo.type === 'expert') {
-    // Get agent sidecar folder from config or use default
-    const agentSidecarFolder = options.config?.agent_sidecar_folder || '{project-root}/.myagent-data';
-
-    // Resolve path variables
-    const resolvedSidecarFolder = agentSidecarFolder
-      .replaceAll('{project-root}', options.projectRoot || process.cwd())
-      .replaceAll('.bmad', options.bmadFolder || '.bmad');
-
-    // Create sidecar directory for this agent
-    const agentSidecarDir = path.join(resolvedSidecarFolder, agentFolderName);
-    if (!fs.existsSync(agentSidecarDir)) {
-      fs.mkdirSync(agentSidecarDir, { recursive: true });
-    }
-
-    // Find and copy sidecar folder
-    const sidecarFiles = copyAgentSidecarFiles(agentInfo.path, agentSidecarDir, agentInfo.yamlFile);
-    result.sidecarCopied = true;
-    result.sidecarFiles = sidecarFiles;
-    result.sidecarDir = agentSidecarDir;
-  }
-
   return result;
-}
-
-/**
- * Recursively copy sidecar files (everything except the .agent.yaml)
- * @param {string} sourceDir - Source agent directory
- * @param {string} targetDir - Target agent directory
- * @param {string} excludeYaml - The .agent.yaml file to exclude
- * @returns {Array} List of copied files
- */
-function copySidecarFiles(sourceDir, targetDir, excludeYaml) {
-  const copied = [];
-
-  function copyDir(src, dest) {
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest, { recursive: true });
-    }
-
-    const entries = fs.readdirSync(src, { withFileTypes: true });
-    for (const entry of entries) {
-      const srcPath = path.join(src, entry.name);
-      const destPath = path.join(dest, entry.name);
-
-      // Skip the source YAML file
-      if (srcPath === excludeYaml) {
-        continue;
-      }
-
-      if (entry.isDirectory()) {
-        copyDir(srcPath, destPath);
-      } else {
-        fs.copyFileSync(srcPath, destPath);
-        copied.push(destPath);
-      }
-    }
-  }
-
-  copyDir(sourceDir, targetDir);
-  return copied;
-}
-
-/**
- * Find and copy agent sidecar folders
- * @param {string} sourceDir - Source agent directory
- * @param {string} targetSidecarDir - Target sidecar directory for the agent
- * @param {string} excludeYaml - The .agent.yaml file to exclude
- * @returns {Array} List of copied files
- */
-function copyAgentSidecarFiles(sourceDir, targetSidecarDir, excludeYaml) {
-  const copied = [];
-  const preserved = [];
-
-  // Find folders with "sidecar" in the name
-  const entries = fs.readdirSync(sourceDir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    if (entry.isDirectory() && entry.name.toLowerCase().includes('sidecar')) {
-      const sidecarSourcePath = path.join(sourceDir, entry.name);
-
-      // Recursively sync the sidecar folder contents (preserve existing, add new)
-      function syncSidecarDir(src, dest) {
-        if (!fs.existsSync(dest)) {
-          fs.mkdirSync(dest, { recursive: true });
-        }
-
-        // Get all files in source
-        const sourceEntries = fs.readdirSync(src, { withFileTypes: true });
-
-        for (const sourceEntry of sourceEntries) {
-          const srcPath = path.join(src, sourceEntry.name);
-          const destPath = path.join(dest, sourceEntry.name);
-
-          if (sourceEntry.isDirectory()) {
-            // Recursively sync subdirectories
-            syncSidecarDir(srcPath, destPath);
-          } else {
-            // Check if file already exists in destination
-            if (fs.existsSync(destPath)) {
-              // File exists - preserve it
-              preserved.push(destPath);
-            } else {
-              // File doesn't exist - copy it
-              fs.copyFileSync(srcPath, destPath);
-              copied.push(destPath);
-            }
-          }
-        }
-      }
-
-      syncSidecarDir(sidecarSourcePath, targetSidecarDir);
-    }
-  }
-
-  // Return info about what was preserved and what was copied
-  return { copied, preserved };
 }
 
 /**
@@ -407,10 +289,10 @@ function detectBmadProject(targetPath) {
 
   // Walk up directory tree looking for BMAD installation
   while (checkPath !== root) {
-    const possibleNames = ['.bmad'];
+    const possibleNames = ['_bmad'];
     for (const name of possibleNames) {
       const bmadFolder = path.join(checkPath, name);
-      const cfgFolder = path.join(bmadFolder, '_cfg');
+      const cfgFolder = path.join(bmadFolder, '_config');
       const manifestFile = path.join(cfgFolder, 'agent-manifest.csv');
 
       if (fs.existsSync(manifestFile)) {
@@ -596,16 +478,16 @@ function addToManifest(manifestFile, agentData) {
 }
 
 /**
- * Save agent source YAML to _cfg/custom/agents/ for reinstallation
+ * Save agent source YAML to _config/custom/agents/ for reinstallation
  * Stores user answers in a top-level saved_answers section (cleaner than overwriting defaults)
  * @param {Object} agentInfo - Agent info (path, type, etc.)
- * @param {string} cfgFolder - Path to _cfg folder
+ * @param {string} cfgFolder - Path to _config folder
  * @param {string} agentName - Final agent name (e.g., "fred-commit-poet")
  * @param {Object} answers - User answers to save for reinstallation
  * @returns {Object} Info about saved source
  */
 function saveAgentSource(agentInfo, cfgFolder, agentName, answers = {}) {
-  // Save to _cfg/custom/agents/ instead of _cfg/agents/
+  // Save to _config/custom/agents/ instead of _config/agents/
   const customAgentsCfgDir = path.join(cfgFolder, 'custom', 'agents');
 
   if (!fs.existsSync(customAgentsCfgDir)) {
@@ -689,7 +571,7 @@ function saveAgentSource(agentInfo, cfgFolder, agentName, answers = {}) {
  */
 async function createIdeSlashCommands(projectRoot, agentName, agentPath, metadata) {
   // Read manifest.yaml to get installed IDEs
-  const manifestPath = path.join(projectRoot, '.bmad', '_cfg', 'manifest.yaml');
+  const manifestPath = path.join(projectRoot, '_bmad', '_config', 'manifest.yaml');
   let installedIdes = ['claude-code']; // Default to Claude Code if no manifest
 
   if (fs.existsSync(manifestPath)) {
@@ -820,8 +702,6 @@ module.exports = {
   loadAgentConfig,
   promptInstallQuestions,
   installAgent,
-  copySidecarFiles,
-  copyAgentSidecarFiles,
   updateAgentId,
   detectBmadProject,
   addToManifest,

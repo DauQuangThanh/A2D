@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 const path = require('node:path');
 const packageJson = require('../../../package.json');
 
@@ -18,7 +18,7 @@ class Config {
     }
 
     const content = await fs.readFile(configPath, 'utf8');
-    return yaml.load(content);
+    return yaml.parse(content);
   }
 
   /**

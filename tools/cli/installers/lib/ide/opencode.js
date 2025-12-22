@@ -2,7 +2,7 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const os = require('node:os');
 const chalk = require('chalk');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
@@ -152,7 +152,7 @@ class OpenCodeSetup extends BaseIdeSetup {
 
     let frontmatter = {};
     try {
-      frontmatter = yaml.load(match[1]) || {};
+      frontmatter = yaml.parse(match[1]) || {};
     } catch {
       frontmatter = {};
     }

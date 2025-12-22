@@ -1,6 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
@@ -34,7 +34,7 @@ class GeminiSetup extends BaseIdeSetup {
     if (await fs.pathExists(coreConfigPath)) {
       try {
         const configContent = await fs.readFile(coreConfigPath, 'utf8');
-        const config = yaml.load(configContent);
+        const config = yaml.parse(configContent);
 
         if (config.user_name) {
           configValues.user_name = config.user_name;
@@ -174,8 +174,8 @@ ${contentWithoutFrontmatter}
     // Note: {user_name} and other {config_values} are left as-is for runtime substitution by Gemini
     const tomlContent = template
       .replaceAll('{{title}}', title)
-      .replaceAll('{.bmad}', '.bmad')
-      .replaceAll('{.bmad}', this.bmadFolderName)
+      .replaceAll('{_bmad}', '_bmad')
+      .replaceAll('{_bmad}', this.bmadFolderName)
       .replaceAll('{{module}}', agent.module)
       .replaceAll('{{name}}', agent.name);
 
@@ -196,8 +196,8 @@ ${contentWithoutFrontmatter}
     // Replace template variables
     const tomlContent = template
       .replaceAll('{{taskName}}', taskName)
-      .replaceAll('{.bmad}', '.bmad')
-      .replaceAll('{.bmad}', this.bmadFolderName)
+      .replaceAll('{_bmad}', '_bmad')
+      .replaceAll('{_bmad}', this.bmadFolderName)
       .replaceAll('{{module}}', task.module)
       .replaceAll('{{filename}}', task.filename);
 

@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const path = require('node:path');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 const { getProjectRoot } = require('./project-root');
 
 /**
@@ -20,7 +20,7 @@ class PlatformCodes {
     try {
       if (fs.existsSync(this.configPath)) {
         const content = fs.readFileSync(this.configPath, 'utf8');
-        this.config = yaml.load(content);
+        this.config = yaml.parse(content);
       } else {
         console.warn(`Platform codes config not found at ${this.configPath}`);
         this.config = { platforms: {} };

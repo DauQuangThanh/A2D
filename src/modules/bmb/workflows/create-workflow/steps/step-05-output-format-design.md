@@ -3,18 +3,18 @@ name: 'step-05-output-format-design'
 description: 'Design the output format for workflows that produce documents or files'
 
 # Path Definitions
-workflow_path: '{project-root}/.bmad/bmb/workflows/create-workflow'
+workflow_path: '{project-root}/_bmad/bmb/workflows/create-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-05-output-format-design.md'
 nextStepFile: '{workflow_path}/steps/step-06-design.md'
 
-targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}'
+targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 5: Output Format Design

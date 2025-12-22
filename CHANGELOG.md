@@ -1,5 +1,218 @@
 # Changelog
 
+## [6.0.0-alpha.19]
+
+**Release: December 18, 2025**
+
+### 🐛 Bug Fixes
+
+**Installer Stability:**
+
+- **Fixed \_bmad Folder Stutter**: Resolved issue with duplicate \_bmad folder creation when applying agent custom files
+- **Cleaner Installation**: Removed unnecessary backup file that was causing bloat in the installer
+- **Streamlined Agent Customization**: Fixed path handling for agent custom files to prevent folder duplication
+
+### 📊 Statistics
+
+- **3 files changed** with critical fix
+- **3,688 lines removed** by eliminating backup files
+- **Improved installer performance** and stability
+
+---
+
+## [6.0.0-alpha.18]
+
+**Release: December 18, 2025**
+
+### 🎮 BMGD Module - Complete Game Development Module Updated
+
+**Massive BMGD Overhaul:**
+
+- **New Game QA Agent (GLaDOS)**: Elite Game QA Architect with test automation specialization
+  - Engine-specific expertise: Unity, Unreal, Godot testing frameworks
+  - Comprehensive knowledge base with 15+ testing topics
+  - Complete testing workflows: test-framework, test-design, automate, playtest-plan, performance-test, test-review
+
+- **New Game Solo Dev Agent (Indie)**: Rapid prototyping and iteration specialist
+  - Quick-flow workflows optimized for solo/small team development
+  - Streamlined development process for indie game creators
+
+- **Production Workflow Alignment**: BMGD 4-production now fully aligned with BMM 4-implementation
+  - Removed obsolete workflows: story-done, story-ready, story-context, epic-tech-context
+  - Added sprint-status workflow for project tracking
+  - All workflows updated as standalone with proper XML instructions
+
+**Game Testing Architecture:**
+
+- **Complete Testing Knowledge Base**: 15 comprehensive testing guides covering:
+  - Engine-specific: Unity (TF 1.6.0), Unreal, Godot testing
+  - Game-specific: Playtesting, balance, save systems, multiplayer
+  - Platform: Certification (TRC/XR), localization, input systems
+  - QA Fundamentals: Automation, performance, regression, smoke testing
+
+**New Workflows & Features:**
+
+- **workflow-status**: Multi-mode status checker for game projects
+  - Game-specific project levels (Game Jam → AAA)
+  - Support for gamedev and quickflow paths
+  - Project initialization workflow
+
+- **create-tech-spec**: Game-focused technical specification workflow
+  - Engine-aware (Unity/Unreal/Godot) specifications
+  - Performance and gameplay feel considerations
+
+- **Enhanced Documentation**: Complete documentation suite with 9 guides
+  - agents-guide.md: Reference for all 6 agents
+  - workflows-guide.md: Complete workflow documentation
+  - game-types-guide.md: 24 game type templates
+  - quick-flow-guide.md: Rapid development guide
+  - Comprehensive troubleshooting and glossary
+
+### 🤖 Agent Management Improved
+
+**Agent Recompile Feature:**
+
+- **New Menu Item**: Added "Recompile Agents" option to the installer menu
+- **Selective Compilation**: Recompile only agents without full module upgrade
+- **Faster Updates**: Quick agent updates without complete reinstallation
+- **Customization Integration**: Automatically applies customizations during recompile
+
+**Agent Customization Enhancement:**
+
+- **Complete Field Support**: ALL fields from agent customization YAML are now properly injected
+- **Deep Merge Implementation**: Customizations now properly override all agent properties
+- **Persistent Customizations**: Custom settings survive updates and recompiles
+- **Enhanced Flexibility**: Support for customizing metadata, persona, menu items, and workflows
+
+### 🔧 Installation & Module Management
+
+**Custom Module Installation:**
+
+- **Enhanced Module Addition**: Modify install now supports adding custom modules even if none were originally installed
+- **Flexible Module Management**: Easy addition and removal of custom modules post-installation
+- **Improved Manifest Tracking**: Better tracking of custom vs core modules
+
+**Quality Improvements:**
+
+- **Comprehensive Code Review**: Fixed 20+ issues identified in PR review
+- **Type Validation**: Added proper type checking for configuration values
+- **Path Security**: Enhanced path traversal validation for better security
+- **Documentation Updates**: All documentation updated to reflect new features
+
+### 📊 Statistics
+
+- **178 files changed** with massive BMGD expansion
+- **28,350+ lines added** across testing documentation and workflows
+- **2 new agents** added to BMGD module
+- **15 comprehensive testing guides** created
+- **Complete alignment** between BMGD and BMM production workflows
+
+### 🌟 Key Highlights
+
+1. **BMGD Module Revolution**: Complete overhaul with professional game development workflows
+2. **Game Testing Excellence**: Comprehensive testing architecture for all major game engines
+3. **Agent Management**: New recompile feature allows quick agent updates without full reinstall
+4. **Full Customization Support**: All agent fields now customizable via YAML
+5. **Industry-Ready Documentation**: Professional-grade guides for game development teams
+
+---
+
+## [6.0.0-alpha.17]
+
+**Release: December 16, 2025**
+
+### 🚀 Revolutionary Installer Overhaul
+
+**Unified Installation Experience:**
+
+- **Streamlined Module Installation**: Completely redesigned installer with unified flow for both core and custom content
+- **Single Install Panel**: Eliminated disjointed clearing between modules for smoother, more intuitive installation
+- **Quick Default Selection**: New quick install feature with default selections for faster setup of selected modules
+- **Enhanced UI/UX**: Improved question order, reduced verbose output, and cleaner installation interface
+- **Logical Question Flow**: Reorganized installer questions to follow natural progression and user expectations
+
+**Custom Content Installation Revolution:**
+
+- **Full Custom Content Support**: Re-enabled complete custom content generation and sharing through the installer
+- **Custom Module Tracking**: Manifest now tracks custom modules separately to ensure they're always installed from the custom cache
+- **Custom Installation Order**: Custom modules now install after core modules for better dependency management
+- **Quick Update with Custom Content**: Quick update now properly retains and updates custom content
+- **Agent Customization Integration**: Customizations are now applied during quick updates and agent compilation
+
+### 🧠 Revolutionary Agent Memory & Visibility System
+
+**Breaking Through Dot-Folder Limitations:**
+
+- **Dot-Folder to Underscore Migration**: Critical change from `.bmad` to `_bmad` ensures LLMs (Codex, Claude, and others) can no longer ignore or skip BMAD content - dot folders are commonly filtered out by AI systems
+- **Universal Content Visibility**: Underscore folders are treated as regular content, ensuring full AI agent access to all BMAD resources and configurations
+- **Agent Memory Architecture**: Rolled out comprehensive agent memory support for installed agents with `-sidecar` folders
+- **Persistent Agent Learning**: Sidecar content installs to `_bmad/_memory`, giving each agent the ability to learn and remember important information specific to its role
+
+**Content Location Strategy:**
+
+- **Standardized Memory Location**: All sidecar content now uses `_bmad/_memory` as the unified location for agent memories
+- **Segregated Output System**: New architecture supports differentiating between ephemeral Phase 4 artifacts and long-term documentation
+- **Forward Compatibility**: Existing installations continue working with content in docs folder, with optimization coming in next release
+- **Configuration Cleanup**: Renamed `_cfg` to `_config` for clearer naming conventions
+- **YAML Library Consolidation**: Reduced dependency to use only one YAML library for better stability
+
+### 🎯 Future-Ready Architecture
+
+**Content Organization Preview:**
+
+- **Phase 4 Artifact Segregation**: Infrastructure ready for separating ephemeral workflow artifacts from permanent documentation
+- **Planning vs Implementation Docs**: New system will differentiate between planning artifacts and long-term project documentation
+- **Backward Compatibility**: Current installs maintain full functionality while preparing for optimized content organization
+- **Quick Update Path**: Tomorrow's quick update will fully optimize all BMM workflows to use new segregated output locations
+
+### 🎯 Sample Modules & Documentation
+
+**Comprehensive Examples:**
+
+- **Sample Unitary Module**: Complete example with commit-poet agent and quiz-master workflow
+- **Sample Wellness Module**: Meditation guide and wellness companion agents demonstrating advanced patterns
+- **Enhanced Documentation**: Updated README files and comprehensive installation guides
+- **Custom Content Creation Guides**: Step-by-step documentation for creating and sharing custom modules
+
+### 🔧 Bug Fixes & Optimizations
+
+**Installer Improvements:**
+
+- **Fixed Duplicate Entry Issue**: Resolved duplicate entries in files manifest
+- **Reduced Log Noise**: Less verbose logging during installation for cleaner user experience
+- **Menu Wording Updates**: Improved menu text for better clarity and understanding
+- **Fixed Quick Install**: Resolved issues with quick installation functionality
+
+**Code Quality:**
+
+- **Minor Code Cleanup**: General cleanup and refactoring throughout the codebase
+- **Removed Unused Code**: Cleaned up deprecated and unused functionality
+- **Release Workflow Restoration**: Fixed automated release workflow for v6
+
+**BMM Phase 4 Workflow Improvements:**
+
+- **Sprint Status Enhancement**: Improved sprint-status validation with interactive correction for unknown values and better epic status handling
+- **Story Status Standardization**: Normalized all story status references to lowercase kebab-case (ready-for-dev, in-progress, review, done)
+- **Removed Stale Story State**: Eliminated deprecated 'drafted' story state - stories now go directly from creation to ready-for-dev
+- **Code Review Clarity**: Improved code review completion message from "Story is ready for next work!" to "Code review complete!" for better clarity
+- **Risk Detection Rules**: Rewrote risk detection rules for better LLM clarity and fixed warnings vs risks naming inconsistency
+
+### 📊 Statistics
+
+- **40+ commits** since alpha.16
+- **Major installer refactoring** with complete UX overhaul
+- **2 new sample modules** with comprehensive examples
+- **Full custom content support** re-enabled and improved
+
+### 🌟 Key Highlights
+
+1. **Installer Revolution**: The installation system has been completely overhauled for better user experience, reliability, and speed
+2. **Custom Content Freedom**: Users can now easily create, share, and install custom content through the streamlined installer
+3. **AI Visibility Breakthrough**: Migration from `.bmad` to `_bmad` ensures LLMs can access all BMAD content (dot folders are commonly ignored by AI systems)
+4. **Agent Memory System**: Rolled out persistent agent memory support - agents with `-sidecar` folders can now learn and remember important information in `_bmad/_memory`
+5. **Quick Default Selection**: Installation is now faster with smart default selections for popular configurations
+6. **Future-Ready Architecture**: Infrastructure in place for segregating ephemeral artifacts from permanent documentation (full optimization coming in next release)
+
 ## [6.0.0-alpha.16]
 
 **Release: December 10, 2025**
@@ -21,7 +234,6 @@
 **Cleanup Changes:**
 
 - **Example Modules Removal**: Temporarily removed example modules to prevent accidental installation
-- **Hardcoded Path Cleanup**: Continued removal of hardcoded `.bmad` folder references from demo content
 - **Memory Management**: Improved sidecar file handling for custom modules
 
 ### 📊 Statistics
@@ -176,7 +388,6 @@
 - Fixed version reading from package.json instead of hardcoded fallback
 - Removed hardcoded years from WebSearch queries
 - Removed broken build caching mechanism
-- Fixed hardcoded '.bmad' prefix from files-manifest.csv paths
 - Enhanced TTS injection summary with tracking and documentation
 - Fixed CI nvmrc configuration issues
 

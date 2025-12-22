@@ -3,7 +3,7 @@ name: 'step-01-validate-prerequisites'
 description: 'Validate required documents exist and extract all requirements for epic and story creation'
 
 # Path Definitions
-workflow_path: '{project-root}/.bmad/bmm/workflows/3-solutioning/create-epics-and-stories'
+workflow_path: '{project-root}/_bmad/bmm/workflows/3-solutioning/create-epics-and-stories'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-01-validate-prerequisites.md'
@@ -13,8 +13,8 @@ outputFile: '{output_folder}/epics.md'
 epicsTemplate: '{workflow_path}/templates/epics-template.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Template References
 epicsTemplate: '{workflow_path}/templates/epics-template.md'

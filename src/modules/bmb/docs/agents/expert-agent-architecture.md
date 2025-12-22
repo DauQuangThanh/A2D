@@ -97,13 +97,21 @@ agent:
       action: 'Update ./{agent-name}-sidecar/memories.md with session insights'
       description: 'Save what we discussed today'
 
-    - trigger: patterns
-      action: '#memory-recall'
-      description: 'Recall patterns from past interactions'
-
     - trigger: insight
       action: 'Document breakthrough in ./{agent-name}-sidecar/breakthroughs.md'
       description: 'Record a significant insight'
+
+    - multi: "[DF] Do Foo or start [CH] Chat with expert"
+      triggers:
+        - do-foo
+            - input: [DF] or fuzzy match on do foo
+            - action: '#main-action'
+            - data: what is being discussed or suggested with the command, along with custom party custom agents if specified
+            - type: action
+        - expert-chat:
+            - input: [CH] or fuzzy match validate agent
+            - action: agent responds as expert based on its persona to converse
+            - type: action
 
   install_config:
     compile_time_only: true
@@ -196,14 +204,6 @@ critical_actions:
 - **Memory integration** - Past context becomes part of current session
 - **Protocol adherence** - Ensures consistent behavior
 
-### {agent_sidecar_folder} Variable
-
-Special variable resolved during installation:
-
-- Points to the agent's installation directory
-- Used to reference sidecar files
-- Example: `.bmad/custom/agents/journal-keeper/`
-
 ## What Gets Injected at Compile Time
 
 Same as simple agents, PLUS:
@@ -238,7 +238,7 @@ Features demonstrated:
 
 ```bash
 # Copy entire folder to your project
-cp -r /path/to/journal-keeper/ .bmad/custom/agents/
+cp -r /path/to/journal-keeper/ _bmad/custom/agents/
 
 # Install with personalization
 bmad agent-install
@@ -312,12 +312,11 @@ critical_actions:
 ## Best Practices
 
 1. **Load sidecar files in critical_actions** - Must be explicit and MANDATORY
-2. **Enforce domain restrictions** - Clear boundaries prevent scope creep
-3. **Use {agent_sidecar_folder} paths** - Portable across installations
-4. **Design for memory growth** - Structure sidecar files for accumulation
-5. **Reference past naturally** - Don't dump memory, weave it into conversation
-6. **Separate concerns** - Memories, instructions, knowledge in distinct files
-7. **Include privacy features** - Users trust expert agents with personal data
+2. **Enforce domain restrictions** - Clear boundaries prevent scope creep=
+3. **Design for memory growth** - Structure sidecar files for accumulation
+4. **Reference past naturally** - Don't dump memory, weave it into conversation
+5. **Separate concerns** - Memories, instructions, knowledge in distinct files
+6. **Include privacy features** - Users trust expert agents with personal data
 
 ## Common Patterns
 
@@ -356,8 +355,8 @@ identity: |
 - [ ] Sidecar folder structure created and populated
 - [ ] memories.md has clear section structure
 - [ ] instructions.md contains core directives
-- [ ] Menu actions reference {agent_sidecar_folder} correctly
-- [ ] File paths use {agent_sidecar_folder} variable
+- [ ] Menu actions reference \_bmad/\_memory correctly
+- [ ] File paths use \_bmad/\_memory/[agentname]-sidecar/ to reference sidecar content
 - [ ] Install config personalizes sidecar references
 - [ ] Agent folder named consistently: `{agent-name}/`
 - [ ] YAML file named: `{agent-name}.agent.yaml`

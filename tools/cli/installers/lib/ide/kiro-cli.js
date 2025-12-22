@@ -2,7 +2,7 @@ const path = require('node:path');
 const { BaseIdeSetup } = require('./_base-ide');
 const chalk = require('chalk');
 const fs = require('fs-extra');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 
 /**
  * Kiro CLI setup handler for BMad Method
@@ -150,7 +150,7 @@ class KiroCliSetup extends BaseIdeSetup {
    */
   async processAgentFile(agentFile, agentsDir, projectDir) {
     const yamlContent = await fs.readFile(agentFile, 'utf8');
-    const agentData = yaml.load(yamlContent);
+    const agentData = yaml.parse(yamlContent);
 
     if (!this.validateBmadCompliance(agentData)) {
       return;

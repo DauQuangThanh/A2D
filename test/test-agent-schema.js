@@ -10,7 +10,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 const { validateAgentFile } = require('../tools/schema/agent.js');
 const { glob } = require('glob');
 
@@ -182,7 +182,7 @@ function runTest(filePath) {
     let agentData;
 
     try {
-      agentData = yaml.load(fileContent);
+      agentData = yaml.parse(fileContent);
     } catch (parseError) {
       // YAML parse error
       if (shouldPass) {

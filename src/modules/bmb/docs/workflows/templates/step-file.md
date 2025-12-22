@@ -3,7 +3,7 @@ name: "step-{{stepNumber}}-{{stepName}}"
 description: "{{stepDescription}}"
 
 # Path Definitions
-workflow_path: "{project-root}/.bmad/{{targetModule}}/workflows/{{workflowName}}"
+workflow_path: "{project-root}/_bmad/{{targetModule}}/workflows/{{workflowName}}"
 
 # File References
 thisStepFile: "{workflow_path}/steps/step-{{stepNumber}}-{{stepName}}.md"
@@ -16,8 +16,8 @@ outputFile: "{output_folder}/{{outputFileName}}-{project_name}.md"
 {{/hasOutput}}
 
 # Task References (list only if used in THIS step file instance and only the ones used, there might be others)
-advancedElicitationTask: "{project-root}/.bmad/core/tasks/advanced-elicitation.xml"
-partyModeWorkflow: "{project-root}/.bmad/core/workflows/party-mode/workflow.md"
+advancedElicitationTask: "{project-root}/_bmad/core/tasks/advanced-elicitation.xml"
+partyModeWorkflow: "{project-root}/_bmad/core/workflows/party-mode/workflow.md"
 
 {{#hasTemplates}}
 # Template References

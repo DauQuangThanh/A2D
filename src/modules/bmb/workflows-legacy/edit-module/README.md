@@ -106,7 +106,7 @@ Modules can share workflows:
 
 ```yaml
 # In agent menu item:
-workflow: '{project-root}/.bmad/other-module/workflows/shared-workflow/workflow.yaml'
+workflow: '{project-root}/_bmad/other-module/workflows/shared-workflow/workflow.yaml'
 ```
 
 Common patterns:
@@ -142,22 +142,6 @@ Changes are reviewed and approved by you before being applied.
 - Cross-module integration (option 10) helps set up workflow sharing
 - Full module review (option 12) is great for inherited or legacy modules
 - The workflow handles path updates when you reorganize structure
-
-## Source vs Installed Modules
-
-**Source modules** (in src/modules/):
-
-- Have installer files in tools/cli/installers/
-- Can configure web bundles
-- Are the development source of truth
-
-**Installed modules** (in .bmad/):
-
-- Are deployed to target projects
-- Use config.yaml for user customization
-- Are compiled from source during installation
-
-This workflow works with both, but installer options only apply to source modules.
 
 ## Example Usage
 

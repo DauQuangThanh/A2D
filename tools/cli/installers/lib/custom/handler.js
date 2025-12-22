@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 const { FileOps } = require('../../../lib/file-ops');
 const { XmlHandler } = require('../../../lib/xml-handler');
 
@@ -86,7 +86,7 @@ class CustomHandler {
       // Try to parse YAML with error handling
       let config;
       try {
-        config = yaml.load(configContent);
+        config = yaml.parse(configContent);
       } catch (parseError) {
         console.warn(chalk.yellow(`Warning: YAML parse error in ${configPath}:`, parseError.message));
         return null;
@@ -306,7 +306,7 @@ class CustomHandler {
       const targetMdPath = path.join(targetDir, `${agentName}.md`);
       // Use the actual bmadDir if available (for when installing to temp dir)
       const actualBmadDir = config._bmadDir || bmadDir;
-      const customizePath = path.join(actualBmadDir, '_cfg', 'agents', `custom-${agentName}.customize.yaml`);
+      const customizePath = path.join(actualBmadDir, '_config', 'agents', `custom-${agentName}.customize.yaml`);
 
       // Read and compile the YAML
       try {
@@ -316,12 +316,14 @@ class CustomHandler {
         // Create customize template if it doesn't exist
         if (!(await fs.pathExists(customizePath))) {
           const { getSourcePath } = require('../../../lib/project-root');
-          const genericTemplatePath = getSourcePath('utility', 'templates', 'agent.customize.template.yaml');
+          const genericTemplatePath = getSourcePath('utility', 'agent-components', 'agent.customize.template.yaml');
           if (await fs.pathExists(genericTemplatePath)) {
-            // Copy with placeholder replacement
             let templateContent = await fs.readFile(genericTemplatePath, 'utf8');
             await fs.writeFile(customizePath, templateContent, 'utf8');
-            console.log(chalk.dim(`  Created customize: custom-${agentName}.customize.yaml`));
+            // Only show customize creation in verbose mode
+            if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
+              console.log(chalk.dim(`  Created customize: custom-${agentName}.customize.yaml`));
+            }
           }
         }
 
@@ -337,51 +339,19 @@ class CustomHandler {
         // Write the compiled MD file
         await fs.writeFile(targetMdPath, processedXml, 'utf8');
 
-        // Check if agent has sidecar
-        let hasSidecar = false;
-        try {
-          const yamlLib = require('yaml');
-          const agentYaml = yamlLib.parse(yamlContent);
-          hasSidecar = agentYaml?.agent?.metadata?.hasSidecar === true;
-        } catch {
-          // Continue without sidecar processing
-        }
-
-        // Copy sidecar files if agent has hasSidecar flag
-        if (hasSidecar && config.agent_sidecar_folder) {
-          const { copyAgentSidecarFiles } = require('../../../lib/agent/installer');
-
-          // Resolve agent sidecar folder path
-          const projectDir = path.dirname(bmadDir);
-          const resolvedSidecarFolder = config.agent_sidecar_folder
-            .replaceAll('{project-root}', projectDir)
-            .replaceAll('.bmad', path.basename(bmadDir));
-
-          // Create sidecar directory for this agent
-          const agentSidecarDir = path.join(resolvedSidecarFolder, agentName);
-          await fs.ensureDir(agentSidecarDir);
-
-          // Copy sidecar files
-          const sidecarResult = copyAgentSidecarFiles(path.dirname(agentFile), agentSidecarDir, agentFile);
-
-          if (sidecarResult.copied.length > 0) {
-            console.log(chalk.dim(`    Copied ${sidecarResult.copied.length} sidecar file(s) to: ${agentSidecarDir}`));
-          }
-          if (sidecarResult.preserved.length > 0) {
-            console.log(chalk.dim(`    Preserved ${sidecarResult.preserved.length} existing sidecar file(s)`));
-          }
-        }
-
         // Track the file
         if (fileTrackingCallback) {
           fileTrackingCallback(targetMdPath);
         }
 
-        console.log(
-          chalk.dim(
-            `    Compiled agent: ${agentName} -> ${path.relative(targetAgentsPath, targetMdPath)}${hasSidecar ? ' (with sidecar)' : ''}`,
-          ),
-        );
+        // Only show compilation details in verbose mode
+        if (process.env.BMAD_VERBOSE_INSTALL === 'true') {
+          console.log(
+            chalk.dim(
+              `    Compiled agent: ${agentName} -> ${path.relative(targetAgentsPath, targetMdPath)}${hasSidecar ? ' (with sidecar)' : ''}`,
+            ),
+          );
+        }
       } catch (error) {
         console.warn(chalk.yellow(`    Failed to compile agent ${agentName}:`, error.message));
         results.errors.push(`Failed to compile agent ${agentName}: ${error.message}`);

@@ -9,16 +9,16 @@ workflow_path: '{project-root}/bmb/workflows/create-agent/create-agent'
 thisStepFile: '{workflow_path}/steps/step-03-persona.md'
 nextStepFile: '{workflow_path}/steps/step-04-commands.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/agent-persona-{project_name}.md'
+agentPlan: '{bmb_creations_output_folder}/agent-plan-{agent_name}.md'
 communicationPresets: '{workflow_path}/data/communication-presets.csv'
-agentMenuPatterns: '{project-root}/.bmad/bmb/docs/agents/agent-menu-patterns.md'
+agentMenuPatterns: '{project-root}/_bmad/bmb/docs/agents/agent-menu-patterns.md'
 
 # Template References
 personaTemplate: '{workflow_path}/templates/agent-persona.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 3: Shape Agent's Personality
@@ -211,7 +211,7 @@ Ask: "How should this agent guide users - with adaptive conversation (intent-bas
 [Intent-based or Prescriptive with rationale]
 ```
 
-Save this content to `{outputFile}` for reference in subsequent steps.
+Append this content to {agentPlan} for reference in subsequent steps.
 
 ### 8. Present MENU OPTIONS
 
@@ -221,7 +221,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
-- IF C: Save content to {outputFile}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
+- IF C: Save content to {agentPlan}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#8-present-menu-options)
 
 #### EXECUTION RULES:

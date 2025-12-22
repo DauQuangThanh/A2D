@@ -269,7 +269,7 @@ The validation is integrated into the GitHub Actions workflow:
 ## Dependencies
 
 - **zod**: Schema validation library
-- **js-yaml**: YAML parsing
+- **yaml**: YAML parsing
 - **glob**: File pattern matching
 - **c8**: Code coverage reporting
 

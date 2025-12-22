@@ -5,5 +5,5 @@ test/fixtures/**
 CODE_OF_CONDUCT.md
 
 # BMAD runtime folders (user-specific, not in repo)
-.bmad/
-.bmad*/
+_bmad/
+_bmad*/

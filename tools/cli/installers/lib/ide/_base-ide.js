@@ -31,18 +31,11 @@ class BaseIdeSetup {
 
   /**
    * Get the agent command activation header from the central template
-   * @returns {string} The activation header text (without XML tags)
+   * @returns {string} The activation header text
    */
   async getAgentCommandHeader() {
-    const headerPath = path.join(getSourcePath(), 'src', 'utility', 'models', 'agent-command-header.md');
-    try {
-      const content = await fs.readFile(headerPath, 'utf8');
-      // Strip the <critical> tags to get plain text
-      return content.replaceAll(/<critical>|<\/critical>/g, '').trim();
-    } catch {
-      // Fallback if file doesn't exist
-      return "You must fully embody this agent's persona and follow all activation instructions, steps and rules exactly as specified. NEVER break character until given an exit command.";
-    }
+    const headerPath = getSourcePath('utility', 'agent-components', 'agent-command-header.md');
+    return await fs.readFile(headerPath, 'utf8');
   }
 
   /**
@@ -143,7 +136,7 @@ class BaseIdeSetup {
     // Get module agents
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_cfg' && entry.name !== 'agents') {
+      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_config' && entry.name !== 'agents') {
         const moduleAgentsPath = path.join(bmadDir, entry.name, 'agents');
         if (await fs.pathExists(moduleAgentsPath)) {
           const moduleAgents = await this.scanDirectory(moduleAgentsPath, '.md');
@@ -215,7 +208,7 @@ class BaseIdeSetup {
     // Get module tasks
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_cfg' && entry.name !== 'agents') {
+      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_config' && entry.name !== 'agents') {
         const moduleTasksPath = path.join(bmadDir, entry.name, 'tasks');
         if (await fs.pathExists(moduleTasksPath)) {
           const moduleTasks = await this.scanDirectoryWithStandalone(moduleTasksPath, ['.md', '.xml']);
@@ -261,7 +254,7 @@ class BaseIdeSetup {
     // Get module tools
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_cfg' && entry.name !== 'agents') {
+      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_config' && entry.name !== 'agents') {
         const moduleToolsPath = path.join(bmadDir, entry.name, 'tools');
         if (await fs.pathExists(moduleToolsPath)) {
           const moduleTools = await this.scanDirectoryWithStandalone(moduleToolsPath, ['.md', '.xml']);
@@ -307,7 +300,7 @@ class BaseIdeSetup {
     // Get module workflows
     const entries = await fs.readdir(bmadDir, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_cfg' && entry.name !== 'agents') {
+      if (entry.isDirectory() && entry.name !== 'core' && entry.name !== '_config' && entry.name !== 'agents') {
         const moduleWorkflowsPath = path.join(bmadDir, entry.name, 'workflows');
         if (await fs.pathExists(moduleWorkflowsPath)) {
           const moduleWorkflows = await this.findWorkflowYamlFiles(moduleWorkflowsPath);
@@ -353,9 +346,9 @@ class BaseIdeSetup {
       } else if (entry.isFile() && entry.name === 'workflow.yaml') {
         // Read workflow.yaml to get name and standalone property
         try {
-          const yaml = require('js-yaml');
+          const yaml = require('yaml');
           const content = await fs.readFile(fullPath, 'utf8');
-          const workflowData = yaml.load(content);
+          const workflowData = yaml.parse(content);
 
           if (workflowData && workflowData.name) {
             workflows.push({
@@ -461,9 +454,9 @@ class BaseIdeSetup {
               // Check for standalone: true in YAML frontmatter
               const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---/);
               if (frontmatterMatch) {
-                const yaml = require('js-yaml');
+                const yaml = require('yaml');
                 try {
-                  const frontmatter = yaml.load(frontmatterMatch[1]);
+                  const frontmatter = yaml.parse(frontmatterMatch[1]);
                   standalone = frontmatter.standalone === true;
                 } catch {
                   // Ignore YAML parse errors
@@ -527,26 +520,26 @@ class BaseIdeSetup {
   }
 
   /**
-   * Write file with content (replaces .bmad placeholder)
+   * Write file with content (replaces _bmad placeholder)
    * @param {string} filePath - File path
    * @param {string} content - File content
    */
   async writeFile(filePath, content) {
-    // Replace .bmad placeholder if present
-    if (typeof content === 'string' && content.includes('.bmad')) {
-      content = content.replaceAll('.bmad', this.bmadFolderName);
+    // Replace _bmad placeholder if present
+    if (typeof content === 'string' && content.includes('_bmad')) {
+      content = content.replaceAll('_bmad', this.bmadFolderName);
     }
 
-    // Replace escape sequence .bmad with literal .bmad
-    if (typeof content === 'string' && content.includes('.bmad')) {
-      content = content.replaceAll('.bmad', '.bmad');
+    // Replace escape sequence _bmad with literal _bmad
+    if (typeof content === 'string' && content.includes('_bmad')) {
+      content = content.replaceAll('_bmad', '_bmad');
     }
     await this.ensureDir(path.dirname(filePath));
     await fs.writeFile(filePath, content, 'utf8');
   }
 
   /**
-   * Copy file from source to destination (replaces .bmad placeholder in text files)
+   * Copy file from source to destination (replaces _bmad placeholder in text files)
    * @param {string} source - Source file path
    * @param {string} dest - Destination file path
    */
@@ -563,14 +556,14 @@ class BaseIdeSetup {
         // Read the file content
         let content = await fs.readFile(source, 'utf8');
 
-        // Replace .bmad placeholder with actual folder name
-        if (content.includes('.bmad')) {
-          content = content.replaceAll('.bmad', this.bmadFolderName);
+        // Replace _bmad placeholder with actual folder name
+        if (content.includes('_bmad')) {
+          content = content.replaceAll('_bmad', this.bmadFolderName);
         }
 
-        // Replace escape sequence .bmad with literal .bmad
-        if (content.includes('.bmad')) {
-          content = content.replaceAll('.bmad', '.bmad');
+        // Replace escape sequence _bmad with literal _bmad
+        if (content.includes('_bmad')) {
+          content = content.replaceAll('_bmad', '_bmad');
         }
 
         // Write to dest with replaced content
@@ -642,7 +635,7 @@ class BaseIdeSetup {
    * @param {Object} agent - Agent information
    */
   async createAgentConfig(bmadDir, agent) {
-    const agentConfigDir = path.join(bmadDir, '_cfg', 'agents');
+    const agentConfigDir = path.join(bmadDir, '_config', 'agents');
     await this.ensureDir(agentConfigDir);
 
     // Load agent config template

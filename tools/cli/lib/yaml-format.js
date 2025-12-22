@@ -1,6 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 const { execSync } = require('node:child_process');
 
 // Dynamic import for ES module
@@ -57,11 +57,10 @@ async function formatYamlContent(content, filename) {
     }
 
     // Parse and re-dump YAML to format it
-    const parsed = yaml.load(fixedContent);
-    const formatted = yaml.dump(parsed, {
+    const parsed = yaml.parse(fixedContent);
+    const formatted = yaml.stringify(parsed, {
       indent: 2,
-      lineWidth: -1, // Disable line wrapping
-      noRefs: true,
+      lineWidth: 0, // Disable line wrapping
       sortKeys: false, // Preserve key order
     });
     // Ensure POSIX-compliant final newline
@@ -96,7 +95,6 @@ async function processMarkdownFile(filePath) {
     const [fullMatch, yamlContent] = match;
     const formatted = await formatYamlContent(yamlContent, filePath);
     if (formatted !== null) {
-      // Remove trailing newline that js-yaml adds
       const trimmedFormatted = formatted.replace(/\n$/, '');
 
       if (trimmedFormatted !== yamlContent) {

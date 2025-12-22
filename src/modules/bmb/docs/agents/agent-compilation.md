@@ -35,7 +35,7 @@ rex.agent.yaml           ← Persona name (users might rename to "Max")
 **Pattern:**
 
 - Filename: `{role-or-function}.agent.yaml` (kebab-case)
-- Metadata ID: `.bmad/{module}/agents/{role-or-function}.md`
+- Metadata ID: `_bmad/{module}/agents/{role-or-function}.md`
 - Persona Name: User-customizable in metadata or customize.yaml
 
 **Example:**
@@ -44,7 +44,7 @@ rex.agent.yaml           ← Persona name (users might rename to "Max")
 # File: presentation-master.agent.yaml
 agent:
   metadata:
-    id: '.bmad/cis/agents/presentation-master.md'
+    id: '_bmad/cis/agents/presentation-master.md'
     name: Caravaggio # ← Users can change this to "Pablo" or "Vince"
     title: Visual Communication & Presentation Expert
 ```
@@ -83,7 +83,7 @@ You must fully embody this agent's persona...
   <step n="N+3">Input resolution rules</step>
 
   <menu-handlers>
-    <!-- Only handlers used in YOUR menu are included -->
+    <!-- Only handler instructions for the handler types used in the agents specific menu are included -->
   </menu-handlers>
 
   <rules>

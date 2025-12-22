@@ -11,8 +11,8 @@ agentFile: '{{agent_path}}'
 nextStepFile: '{workflow_path}/steps/step-05-validate.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 4: Apply Changes

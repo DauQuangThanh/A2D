@@ -9,8 +9,8 @@ workflow_path: '{project-root}/bmb/workflows/create-agent/create-agent'
 thisStepFile: '{workflow_path}/steps/step-02-discover.md'
 nextStepFile: '{workflow_path}/steps/step-03-persona.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/agent-purpose-{project_name}.md'
-agentTypesGuide: '{project-root}/.bmad/bmb/docs/agents/understanding-agent-types.md'
+agentPlan: '{bmb_creations_output_folder}/agent-plan-{agent_name}.md'
+agentTypesGuide: '{project-root}/_bmad/bmb/docs/agents/understanding-agent-types.md'
 simpleExamples: '{workflow_path}/data/reference/agents/simple-examples/'
 expertExamples: '{workflow_path}/data/reference/agents/expert-examples/'
 moduleExamples: '{workflow_path}/data/reference/agents/module-examples/'
@@ -19,8 +19,8 @@ moduleExamples: '{workflow_path}/data/reference/agents/module-examples/'
 agentPurposeTemplate: '{workflow_path}/templates/agent-purpose-and-type.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 2: Discover Agent Purpose and Type
@@ -112,10 +112,6 @@ As purpose becomes clear, analyze and recommend appropriate agent type.
   - Choose when: Needs to remember across sessions, personal knowledge base, learning over time
   - CAN have personal workflows in sidecar if critical_actions loads workflow engine
   - Example: Personal research assistant, domain expert advisor, learning companion
-
-- **Module Agent** - Workflow orchestration, team integration, shared infrastructure
-  - Choose when: Coordinates workflows, works with other agents, professional operations
-  - CAN invoke module workflows and coordinate with team agents
   - Example: Project coordinator, workflow manager, team orchestrator
 
 **Type Selection Process:**
@@ -162,7 +158,7 @@ As purpose becomes clear, analyze and recommend appropriate agent type.
 [Any relevant insights from previous brainstorming session]
 ```
 
-Save this content to `{outputFile}` for reference in subsequent steps.
+Save this content to {agentPlan} for reference in subsequent steps.
 
 ### 6. Present MENU OPTIONS
 
@@ -172,7 +168,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
-- IF C: Save content to {outputFile}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
+- IF C: Save content to {agentPlan}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#6-present-menu-options)
 
 #### EXECUTION RULES:

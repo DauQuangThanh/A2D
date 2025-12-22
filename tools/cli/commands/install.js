@@ -21,27 +21,27 @@ module.exports = {
         return;
       }
 
-      // Handle agent compilation separately
-      if (config.actionType === 'compile') {
-        const result = await installer.compileAgents(config);
-        console.log(chalk.green('\n✨ Agent compilation complete!'));
-        console.log(chalk.cyan(`Rebuilt ${result.agentCount} agents and ${result.taskCount} tasks`));
-        process.exit(0);
-        return;
-      }
-
       // Handle quick update separately
       if (config.actionType === 'quick-update') {
         const result = await installer.quickUpdate(config);
         console.log(chalk.green('\n✨ Quick update complete!'));
         console.log(chalk.cyan(`Updated ${result.moduleCount} modules with preserved settings`));
+        console.log(
+          chalk.magenta(
+            "\n📋 Want to see what's new? Check out the changelog: https://github.com/bmad-code-org/BMAD-METHOD/blob/main/CHANGELOG.md",
+          ),
+        );
         process.exit(0);
         return;
       }
 
-      // Handle reinstall by setting force flag
-      if (config.actionType === 'reinstall') {
-        config._requestedReinstall = true;
+      // Handle compile agents separately
+      if (config.actionType === 'compile-agents') {
+        const result = await installer.compileAgents(config);
+        console.log(chalk.green('\n✨ Agent recompilation complete!'));
+        console.log(chalk.cyan(`Recompiled ${result.agentCount} agents with customizations applied`));
+        process.exit(0);
+        return;
       }
 
       // Regular install/update flow
@@ -55,14 +55,11 @@ module.exports = {
 
       // Check if installation succeeded
       if (result && result.success) {
-        console.log(chalk.green('\n✨ Installation complete!'));
-        console.log(chalk.cyan('BMAD Core and Selected Modules have been installed to:'), chalk.bold(result.path));
-        console.log(chalk.yellow('\nThank you for helping test the early release version of the new BMad Core and BMad Method!'));
-        console.log(chalk.cyan('Stable Beta coming soon - please read the full README.md and linked documentation to get started!'));
-
         // Run AgentVibes installer if needed
         if (result.needsAgentVibes) {
-          console.log(chalk.magenta('\n🎙️  AgentVibes TTS Setup'));
+          // Add some spacing before AgentVibes setup
+          console.log('');
+          console.log(chalk.magenta('🎙️  AgentVibes TTS Setup'));
           console.log(chalk.cyan('AgentVibes provides voice synthesis for BMAD agents with:'));
           console.log(chalk.dim('  • ElevenLabs AI (150+ premium voices)'));
           console.log(chalk.dim('  • Piper TTS (50+ free voices)\n'));
@@ -91,6 +88,7 @@ module.exports = {
               shell: true,
             });
             console.log(chalk.green('\n✓ AgentVibes installation complete'));
+            console.log(chalk.cyan('\n✨ BMAD with TTS is ready to use!'));
           } catch {
             console.log(chalk.yellow('\n⚠ AgentVibes installation was interrupted or failed'));
             console.log(chalk.cyan('You can run it manually later with:'));

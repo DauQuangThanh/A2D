@@ -1,6 +1,6 @@
 # Game Brief - Interactive Workflow Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/.bmad/core/tasks/workflow.xml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/\_bmad/core/tasks/workflow.xml</critical>
 <critical>You MUST have already loaded and processed: {installed_path}/workflow.yaml</critical>
 <critical>Communicate all responses in {communication_language} and language MUST be tailored to {user_skill_level}</critical>
 <critical>Generate all documents in {document_output_language}</critical>
@@ -12,7 +12,7 @@
 <workflow>
 
 <step n="0" goal="Validate workflow readiness" tag="workflow-status">
-<action>Check if {output_folder}/bmm-workflow-status.yaml exists</action>
+<action>Check if {output_folder}/bmgd-workflow-status.yaml exists</action>
 
 <check if="status file not found">
   <output>No workflow status file found. Game brief is optional - you can continue without status tracking.</output>
@@ -20,7 +20,7 @@
 </check>
 
 <check if="status file found">
-  <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
+  <action>Load the FULL file: {output_folder}/bmgd-workflow-status.yaml</action>
   <action>Parse workflow_status section</action>
   <action>Check status of "game-brief" workflow</action>
   <action>Get project_level from YAML metadata</action>
@@ -328,7 +328,7 @@ This brief will serve as the primary input for creating the Game Design Document
 
 <step n="16" goal="Update status and complete" tag="workflow-status">
 <check if="standalone_mode != true">
-  <action>Load the FULL file: {output_folder}/bmm-workflow-status.yaml</action>
+  <action>Load the FULL file: {output_folder}/bmgd-workflow-status.yaml</action>
   <action>Find workflow_status key "game-brief"</action>
   <critical>ONLY write the file path as the status value - no other text, notes, or metadata</critical>
   <action>Update workflow_status["game-brief"] = "{output_folder}/bmm-game-brief-{{game_name}}-{{date}}.md"</action>

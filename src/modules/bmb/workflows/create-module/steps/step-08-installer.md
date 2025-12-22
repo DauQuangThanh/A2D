@@ -1,11 +1,11 @@
 ---
-installed_path: '{project-root}/.bmad/bmb/workflows/create-module'
+installed_path: '{project-root}/_bmad/bmb/workflows/create-module'
 nextStepFile: '{installed_path}/steps/step-09-documentation.md'
-modulePlanFile: '{custom_module_location}/{module_name}/module-plan-{module_name}.md'
+modulePlanFile: '{bmb_creations_output_folder}/{module_name}/module-plan-{module_name}.md'
 installerTemplate: '{installed_path}/templates/installer.template.js'
 installConfigTemplate: '{installed_path}/templates/install-config.template.yaml'
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 8: Setup Module Installer
@@ -72,13 +72,13 @@ From step 5, we planned these configuration fields:
 ### 2. Create Installer Directory
 
 Ensure \_module-installer directory exists
-Directory: {custom_module_location}/{module_name}/\_module-installer/
+Directory: {bmb_creations_output_folder}/{module_name}/\_module-installer/
 
 ### 3. Create module.yaml
 
 "I'll create the module.yaml file based on your configuration plan. This is the core installer configuration file."
 
-Create file: {custom_module_location}/{module_name}/module.yaml from template {installConfigTemplate}
+Create file: {bmb_creations_output_folder}/{module_name}/module.yaml from template {installConfigTemplate}
 
 ### 4. Handle Custom Installation Logic
 
@@ -95,7 +95,7 @@ Does your module need any special setup during installation? For example:
 
 "I'll create an installer.js file for custom logic."
 
-Create file: {custom_module_location}/{module_name}/\_module-installer/installer.js from {installerTemplate}
+Create file: {bmb_creations_output_folder}/{module_name}/\_module-installer/installer.js from {installerTemplate}
 
 Update installer.js with module-specific logic
 
@@ -131,7 +131,7 @@ Update module-plan.md with installer section:
 
 1. User runs: `bmad install {module_name}`
 2. Installer asks: [list of questions]
-3. Creates: .bmad/{module_name}/
+3. Creates: \_bmad/{module_name}/
 4. Generates: config.yaml with user settings
 
 ### Validation

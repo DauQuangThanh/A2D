@@ -3,19 +3,19 @@ name: 'step-04-plan-review'
 description: 'Review complete workflow plan (requirements + tools) and get user approval before design'
 
 # Path Definitions
-workflow_path: '{project-root}/.bmad/bmb/workflows/create-workflow'
+workflow_path: '{project-root}/_bmad/bmb/workflows/create-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-04-plan-review.md'
 nextStepFormDesign: '{workflow_path}/steps/step-05-output-format-design.md'
 nextStepDesign: '{workflow_path}/steps/step-06-design.md'
 
-targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}'
+targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 # Template References
 # No template needed - will append review summary directly to workflow plan
 ---

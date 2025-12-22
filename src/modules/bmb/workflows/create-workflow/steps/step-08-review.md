@@ -3,19 +3,19 @@ name: 'step-08-review'
 description: 'Review the generated workflow and provide final validation and next steps'
 
 # Path Definitions
-workflow_path: '{project-root}/.bmad/bmb/workflows/create-workflow'
+workflow_path: '{project-root}/_bmad/bmb/workflows/create-workflow'
 
 # File References
 thisStepFile: '{workflow_path}/steps/step-08-review.md'
 workflowFile: '{workflow_path}/workflow.md'
 
 # Output files for workflow creation process
-targetWorkflowPath: '{custom_stand_alone_location}/workflows/{new_workflow_name}'
+targetWorkflowPath: '{bmb_creations_output_folder}/workflows/{new_workflow_name}'
 workflowPlanFile: '{targetWorkflowPath}/workflow-plan-{new_workflow_name}.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 
 # Template References
 # No review template needed - will append review summary directly to workflow plan

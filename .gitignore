@@ -31,7 +31,7 @@ Thumbs.db
 # IDE and editor configs
 .windsurf/
 .trae/
-.bmad*/.cursor/
+_bmad*/.cursor/
 
 # AI assistant files
 CLAUDE.md
@@ -44,8 +44,8 @@ CLAUDE.local.md
 .claude/settings.local.json
 
 # Project-specific
-.bmad-core
-.bmad-creator-tools
+_bmad-core
+_bmad-creator-tools
 test-project-install/*
 sample-project/*
 flattened-codebase.xml
@@ -65,7 +65,7 @@ src/modules/bmgd/sub-modules/
 shared-modules
 z*/
 
-.bmad
+_bmad
 .claude
 .codex
 .github/chatmodes

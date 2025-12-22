@@ -1,6 +1,6 @@
 # Quick Flow Solo Dev Agent (Barry)
 
-**Agent ID:** `.bmad/bmm/agents/quick-flow-solo-dev.md`
+**Agent ID:** `_bmad/bmm/agents/quick-flow-solo-dev.md`
 **Icon:** 🚀
 **Module:** BMM
 
@@ -36,25 +36,25 @@ Barry owns the entire BMAD Quick Flow path, providing a streamlined 3-step devel
 
 ### 1. **create-tech-spec**
 
-- **Workflow:** `.bmad/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml`
+- **Workflow:** `_bmad/bmm/workflows/bmad-quick-flow/create-tech-spec/workflow.yaml`
 - **Description:** Architect a technical spec with implementation-ready stories
 - **Use when:** You need to transform requirements into a buildable spec
 
 ### 2. **quick-dev**
 
-- **Workflow:** `.bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.yaml`
+- **Workflow:** `_bmad/bmm/workflows/bmad-quick-flow/quick-dev/workflow.yaml`
 - **Description:** Ship features from spec or direct instructions - no handoffs
 - **Use when:** You're ready to ship code based on a spec or clear instructions
 
 ### 3. **code-review**
 
-- **Workflow:** `.bmad/bmm/workflows/4-implementation/code-review/workflow.yaml`
+- **Workflow:** `_bmad/bmm/workflows/4-implementation/code-review/workflow.yaml`
 - **Description:** Review code for quality, patterns, and acceptance criteria
 - **Use when:** You need to validate implementation quality
 
 ### 4. **party-mode**
 
-- **Workflow:** `.bmad/core/workflows/party-mode/workflow.yaml`
+- **Workflow:** `_bmad/core/workflows/party-mode/workflow.yaml`
 - **Description:** Bring in other experts when I need specialized backup
 - **Use when:** You need collaborative problem-solving or specialized expertise
 

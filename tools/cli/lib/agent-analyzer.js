@@ -1,4 +1,4 @@
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 const fs = require('fs-extra');
 
 /**
@@ -91,7 +91,7 @@ class AgentAnalyzer {
    */
   async analyzeAgentFile(filePath) {
     const content = await fs.readFile(filePath, 'utf8');
-    const agentYaml = yaml.load(content);
+    const agentYaml = yaml.parse(content);
     return this.analyzeAgentObject(agentYaml);
   }
 

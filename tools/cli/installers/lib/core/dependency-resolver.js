@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('node:path');
 const glob = require('glob');
 const chalk = require('chalk');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 
 /**
  * Dependency Resolver for BMAD modules
@@ -147,7 +147,7 @@ class DependencyResolver {
           // Quote values with backticks to make them valid YAML
           yamlContent = yamlContent.replaceAll(/: `([^`]+)`/g, ': "$1"');
 
-          const frontmatter = yaml.load(yamlContent);
+          const frontmatter = yaml.parse(yamlContent);
           if (frontmatter.dependencies) {
             const deps = Array.isArray(frontmatter.dependencies) ? frontmatter.dependencies : [frontmatter.dependencies];
 

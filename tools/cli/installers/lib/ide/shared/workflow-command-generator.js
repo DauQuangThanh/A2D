@@ -109,7 +109,7 @@ class WorkflowCommandGenerator {
 
     // Convert source path to installed path
     // From: /Users/.../src/modules/bmm/workflows/.../workflow.yaml
-    // To: {project-root}/.bmad/bmm/workflows/.../workflow.yaml
+    // To: {project-root}/_bmad/bmm/workflows/.../workflow.yaml
     let workflowPath = workflow.path;
 
     // Extract the relative path from source
@@ -131,8 +131,8 @@ class WorkflowCommandGenerator {
       .replaceAll('{{module}}', workflow.module)
       .replaceAll('{{description}}', workflow.description)
       .replaceAll('{{workflow_path}}', workflowPath)
-      .replaceAll('.bmad', this.bmadFolderName)
-      .replaceAll('.bmad', '.bmad');
+      .replaceAll('_bmad', this.bmadFolderName)
+      .replaceAll('_bmad', '_bmad');
   }
 
   /**
@@ -224,7 +224,7 @@ When running any workflow:
   }
 
   async loadWorkflowManifest(bmadDir) {
-    const manifestPath = path.join(bmadDir, '_cfg', 'workflow-manifest.csv');
+    const manifestPath = path.join(bmadDir, '_config', 'workflow-manifest.csv');
 
     if (!(await fs.pathExists(manifestPath))) {
       return null;

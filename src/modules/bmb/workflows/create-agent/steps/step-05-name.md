@@ -9,14 +9,15 @@ workflow_path: '{project-root}/bmb/workflows/create-agent/create-agent'
 thisStepFile: '{workflow_path}/steps/step-05-name.md'
 nextStepFile: '{workflow_path}/steps/step-06-build.md'
 workflowFile: '{workflow_path}/workflow.md'
-outputFile: '{output_folder}/agent-identity-{project_name}.md'
+
+agentPlan: '{bmb_creations_output_folder}/agent-plan-{agent_name}.md'
 
 # Template References
 identityTemplate: '{workflow_path}/templates/agent-identity.md'
 
 # Task References
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 5: Agent Naming and Identity
@@ -182,7 +183,7 @@ Once name is selected, confirm the complete identity package:
 [User confirmation that identity package feels right]
 ```
 
-Save this content to `{outputFile}` for reference in subsequent steps.
+Save this content to {agentPlan} for reference in subsequent steps.
 
 ### 6. Present MENU OPTIONS
 
@@ -192,7 +193,7 @@ Display: "**Select an Option:** [A] Advanced Elicitation [P] Party Mode [C] Cont
 
 - IF A: Execute {advancedElicitationTask}
 - IF P: Execute {partyModeWorkflow}
-- IF C: Save content to {outputFile}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
+- IF C: Save content to {agentPlan}, update frontmatter, then only then load, read entire file, then execute {nextStepFile}
 - IF Any other comments or queries: help user respond then [Redisplay Menu Options](#6-present-menu-options)
 
 #### EXECUTION RULES:

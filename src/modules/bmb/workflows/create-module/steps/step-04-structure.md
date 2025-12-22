@@ -1,9 +1,9 @@
 ---
-installed_path: '{project-root}/.bmad/bmb/workflows/create-module'
+installed_path: '{project-root}/_bmad/bmb/workflows/create-module'
 nextStepFile: '{installed_path}/steps/step-05-config.md'
-modulePlanFile: '{custom_module_location}/{module_name}/module-plan-{module_name}.md'
-advancedElicitationTask: '{project-root}/.bmad/core/tasks/advanced-elicitation.xml'
-partyModeWorkflow: '{project-root}/.bmad/core/workflows/party-mode/workflow.md'
+modulePlanFile: '{bmb_creations_output_folder}/{module_name}/module-plan-{module_name}.md'
+advancedElicitationTask: '{project-root}/_bmad/core/tasks/advanced-elicitation.xml'
+partyModeWorkflow: '{project-root}/_bmad/core/workflows/party-mode/workflow.md'
 ---
 
 # Step 4: Create Module Structure
@@ -122,7 +122,7 @@ For a [module type] module, we'll create this structure:"
 
 ### 3. Create Directory Structure
 
-Create all directories in {custom_module_location}/{module_name}/:
+Create all directories in {bmb_creations_output_folder}/{module_name}/:
 
 1. **agents/** - For agent definition files
 2. **workflows/** - For workflow folders
@@ -169,7 +169,7 @@ Update module-plan.md with structure section:
 ## Module Structure
 
 **Module Type:** [Simple/Standard/Complex]
-**Location:** {custom_module_location}/{module_name}
+**Location:** {bmb_creations_output_folder}/{module_name}
 
 **Directory Structure Created:**
 - ✅ agents/

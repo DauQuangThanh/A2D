@@ -1,6 +1,6 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const yaml = require('js-yaml');
+const yaml = require('yaml');
 const { glob } = require('glob');
 const { getSourcePath } = require('../../../../lib/project-root');
 
@@ -14,7 +14,7 @@ async function loadModuleInjectionConfig(handler, moduleName) {
   }
 
   const configContent = await fs.readFile(configPath, 'utf8');
-  const config = yaml.load(configContent) || {};
+  const config = yaml.parse(configContent) || {};
 
   return {
     config,

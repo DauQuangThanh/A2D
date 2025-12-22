@@ -1,6 +1,6 @@
 /**
  * Custom Module Source Cache
- * Caches custom module sources under _cfg/custom/ to ensure they're never lost
+ * Caches custom module sources under _config/custom/ to ensure they're never lost
  * and can be checked into source control
  */
 
@@ -11,7 +11,7 @@ const crypto = require('node:crypto');
 class CustomModuleCache {
   constructor(bmadDir) {
     this.bmadDir = bmadDir;
-    this.customCacheDir = path.join(bmadDir, '_cfg', 'custom');
+    this.customCacheDir = path.join(bmadDir, '_config', 'custom');
     this.manifestPath = path.join(this.customCacheDir, 'cache-manifest.yaml');
   }
 
@@ -31,19 +31,21 @@ class CustomModuleCache {
     }
 
     const content = await fs.readFile(this.manifestPath, 'utf8');
-    const yaml = require('js-yaml');
-    return yaml.load(content) || {};
+    const yaml = require('yaml');
+    return yaml.parse(content) || {};
   }
 
   /**
    * Update cache manifest
    */
   async updateCacheManifest(manifest) {
-    const yaml = require('js-yaml');
-    const content = yaml.dump(manifest, {
+    const yaml = require('yaml');
+    // Clean the manifest to remove any non-serializable values
+    const cleanManifest = structuredClone(manifest);
+
+    const content = yaml.stringify(cleanManifest, {
       indent: 2,
-      lineWidth: -1,
-      noRefs: true,
+      lineWidth: 0,
       sortKeys: false,
     });
 
@@ -145,12 +147,18 @@ class CustomModuleCache {
     const sourceHash = await this.calculateHash(sourcePath);
     const cacheHash = await this.calculateHash(cacheDir);
 
-    // Update manifest - don't store originalPath for source control friendliness
+    // Update manifest - don't store absolute paths for portability
+    // Clean metadata to remove absolute paths
+    const cleanMetadata = { ...metadata };
+    if (cleanMetadata.sourcePath) {
+      delete cleanMetadata.sourcePath;
+    }
+
     cacheManifest[moduleId] = {
       originalHash: sourceHash,
       cacheHash: cacheHash,
       cachedAt: new Date().toISOString(),
-      ...metadata,
+      ...cleanMetadata,
     };
 
     await this.updateCacheManifest(cacheManifest);

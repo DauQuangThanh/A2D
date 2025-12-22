@@ -6,7 +6,7 @@ const ignore = require('ignore');
 // These complement .gitignore and are applied regardless of VCS presence.
 const DEFAULT_PATTERNS = [
   // Project/VCS
-  '**/.bmad-method/**',
+  '**/_bmad/**',
   '**/.git/**',
   '**/.svn/**',
   '**/.hg/**',

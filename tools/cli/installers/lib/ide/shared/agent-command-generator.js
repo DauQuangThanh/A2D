@@ -65,8 +65,8 @@ class AgentCommandGenerator {
       .replaceAll('{{module}}', agent.module)
       .replaceAll('{{path}}', agentPathInModule)
       .replaceAll('{{description}}', agent.description || `${agent.name} agent`)
-      .replaceAll('.bmad', this.bmadFolderName)
-      .replaceAll('.bmad', '.bmad');
+      .replaceAll('_bmad', this.bmadFolderName)
+      .replaceAll('_bmad', '_bmad');
   }
 
   /**
