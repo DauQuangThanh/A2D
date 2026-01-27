@@ -1,6 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
+const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = require('./path-utils');
 
 /**
  * Generates launcher command files for each agent
@@ -30,11 +31,23 @@ class AgentCommandGenerator {
       const launcherContent = await this.generateLauncherContent(agent);
       // Use relativePath if available (for nested agents), otherwise just name with .md
       const agentPathInModule = agent.relativePath || `${agent.name}.md`;
+      // Calculate the relative agent path (e.g., bmm/agents/pm.md)
+      let agentRelPath = agent.path;
+      // Remove _bmad/ prefix if present to get relative path from project root
+      // Handle both absolute paths (/path/to/_bmad/...) and relative paths (_bmad/...)
+      if (agentRelPath.includes('_bmad/')) {
+        const parts = agentRelPath.split(/_bmad\//);
+        if (parts.length > 1) {
+          agentRelPath = parts.slice(1).join('/');
+        }
+      }
       artifacts.push({
         type: 'agent-launcher',
-        module: agent.module,
         name: agent.name,
-        relativePath: path.join(agent.module, 'agents', agentPathInModule),
+        description: agent.description || `${agent.name} agent`,
+        module: agent.module,
+        relativePath: path.join(agent.module, 'agents', agentPathInModule), // For command filename
+        agentPath: agentRelPath, // Relative path to actual agent file
         content: launcherContent,
         sourcePath: agent.path,
       });
@@ -90,6 +103,76 @@ class AgentCommandGenerator {
     }
 
     return writtenCount;
+  }
+
+  /**
+   * Write agent launcher artifacts using underscore format (Windows-compatible)
+   * Creates flat files like: bmad_bmm_pm.md
+   *
+   * @param {string} baseCommandsDir - Base commands directory for the IDE
+   * @param {Array} artifacts - Agent launcher artifacts
+   * @returns {number} Count of launchers written
+   */
+  async writeColonArtifacts(baseCommandsDir, artifacts) {
+    let writtenCount = 0;
+
+    for (const artifact of artifacts) {
+      if (artifact.type === 'agent-launcher') {
+        // Convert relativePath to underscore format: bmm/agents/pm.md → bmad_bmm_pm.md
+        const flatName = toColonPath(artifact.relativePath);
+        const launcherPath = path.join(baseCommandsDir, flatName);
+        await fs.ensureDir(path.dirname(launcherPath));
+        await fs.writeFile(launcherPath, artifact.content);
+        writtenCount++;
+      }
+    }
+
+    return writtenCount;
+  }
+
+  /**
+   * Write agent launcher artifacts using dash format (NEW STANDARD)
+   * Creates flat files like: bmad-bmm-pm.agent.md
+   *
+   * The .agent.md suffix distinguishes agents from workflows/tasks/tools.
+   *
+   * @param {string} baseCommandsDir - Base commands directory for the IDE
+   * @param {Array} artifacts - Agent launcher artifacts
+   * @returns {number} Count of launchers written
+   */
+  async writeDashArtifacts(baseCommandsDir, artifacts) {
+    let writtenCount = 0;
+
+    for (const artifact of artifacts) {
+      if (artifact.type === 'agent-launcher') {
+        // Convert relativePath to dash format: bmm/agents/pm.md → bmad-bmm-pm.agent.md
+        const flatName = toDashPath(artifact.relativePath);
+        const launcherPath = path.join(baseCommandsDir, flatName);
+        await fs.ensureDir(path.dirname(launcherPath));
+        await fs.writeFile(launcherPath, artifact.content);
+        writtenCount++;
+      }
+    }
+
+    return writtenCount;
+  }
+
+  /**
+   * Get the custom agent name in underscore format (Windows-compatible)
+   * @param {string} agentName - Custom agent name
+   * @returns {string} Underscore-formatted filename
+   */
+  getCustomAgentColonName(agentName) {
+    return customAgentColonName(agentName);
+  }
+
+  /**
+   * Get the custom agent name in underscore format (Windows-compatible)
+   * @param {string} agentName - Custom agent name
+   * @returns {string} Underscore-formatted filename
+   */
+  getCustomAgentDashName(agentName) {
+    return customAgentDashName(agentName);
   }
 }
 

@@ -121,8 +121,16 @@ class ManifestGenerator {
   async getWorkflowsFromPath(basePath, moduleName) {
     const workflows = [];
     const workflowsPath = path.join(basePath, 'workflows');
+    const debug = process.env.BMAD_DEBUG_MANIFEST === 'true';
+
+    if (debug) {
+      console.log(`[DEBUG] Scanning workflows in: ${workflowsPath}`);
+    }
 
     if (!(await fs.pathExists(workflowsPath))) {
+      if (debug) {
+        console.log(`[DEBUG] Workflows path does not exist: ${workflowsPath}`);
+      }
       return workflows;
     }
 
@@ -139,8 +147,13 @@ class ManifestGenerator {
           await findWorkflows(fullPath, newRelativePath);
         } else if (entry.name === 'workflow.yaml' || entry.name === 'workflow.md') {
           // Parse workflow file (both YAML and MD formats)
+          if (debug) {
+            console.log(`[DEBUG] Found workflow file: ${fullPath}`);
+          }
           try {
-            const content = await fs.readFile(fullPath, 'utf8');
+            // Read and normalize line endings (fix Windows CRLF issues)
+            const rawContent = await fs.readFile(fullPath, 'utf8');
+            const content = rawContent.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 
             let workflow;
             if (entry.name === 'workflow.yaml') {
@@ -150,13 +163,31 @@ class ManifestGenerator {
               // Parse MD workflow with YAML frontmatter
               const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
               if (!frontmatterMatch) {
+                if (debug) {
+                  console.log(`[DEBUG] Skipped (no frontmatter): ${fullPath}`);
+                }
                 continue; // Skip MD files without frontmatter
               }
               workflow = yaml.parse(frontmatterMatch[1]);
             }
 
+            if (debug) {
+              console.log(`[DEBUG] Parsed: name="${workflow.name}", description=${workflow.description ? 'OK' : 'MISSING'}`);
+            }
+
             // Skip template workflows (those with placeholder values)
             if (workflow.name && workflow.name.includes('{') && workflow.name.includes('}')) {
+              if (debug) {
+                console.log(`[DEBUG] Skipped (template placeholder): ${workflow.name}`);
+              }
+              continue;
+            }
+
+            // Skip workflows marked as non-standalone (reference/example workflows)
+            if (workflow.standalone === false) {
+              if (debug) {
+                console.log(`[DEBUG] Skipped (standalone=false): ${workflow.name}`);
+              }
               continue;
             }
 
@@ -167,7 +198,7 @@ class ManifestGenerator {
                   ? `${this.bmadFolderName}/core/workflows/${relativePath}/${entry.name}`
                   : `${this.bmadFolderName}/${moduleName}/workflows/${relativePath}/${entry.name}`;
 
-              // ALL workflows now generate commands - no standalone property needed
+              // Workflows with standalone: false are filtered out above
               workflows.push({
                 name: workflow.name,
                 description: workflow.description.replaceAll('"', '""'), // Escape quotes for CSV
@@ -182,6 +213,14 @@ class ManifestGenerator {
                 module: moduleName,
                 path: installPath,
               });
+
+              if (debug) {
+                console.log(`[DEBUG] ✓ Added workflow: ${workflow.name} (${moduleName})`);
+              }
+            } else {
+              if (debug) {
+                console.log(`[DEBUG] Skipped (missing name or description): ${fullPath}`);
+              }
             }
           } catch (error) {
             console.warn(`Warning: Failed to parse workflow at ${fullPath}: ${error.message}`);
@@ -191,6 +230,11 @@ class ManifestGenerator {
     };
 
     await findWorkflows(workflowsPath);
+
+    if (debug) {
+      console.log(`[DEBUG] Total workflows found in ${moduleName}: ${workflows.length}`);
+    }
+
     return workflows;
   }
 
@@ -341,26 +385,45 @@ class ManifestGenerator {
         const filePath = path.join(dirPath, file);
         const content = await fs.readFile(filePath, 'utf8');
 
-        // Extract task metadata from content if possible
-        const nameMatch = content.match(/name="([^"]+)"/);
+        let name = file.replace(/\.(xml|md)$/, '');
+        let displayName = name;
+        let description = '';
+        let standalone = false;
 
-        // Try description attribute first, fall back to <objective> element
-        const descMatch = content.match(/description="([^"]+)"/);
-        const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
-        const description = descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '';
+        if (file.endsWith('.md')) {
+          // Parse YAML frontmatter for .md tasks
+          const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+          if (frontmatterMatch) {
+            try {
+              const frontmatter = yaml.parse(frontmatterMatch[1]);
+              name = frontmatter.name || name;
+              displayName = frontmatter.displayName || frontmatter.name || name;
+              description = frontmatter.description || '';
+              standalone = frontmatter.standalone === true || frontmatter.standalone === 'true';
+            } catch {
+              // If YAML parsing fails, use defaults
+            }
+          }
+        } else {
+          // For .xml tasks, extract from tag attributes
+          const nameMatch = content.match(/name="([^"]+)"/);
+          displayName = nameMatch ? nameMatch[1] : name;
 
-        // Check for standalone attribute in <task> tag (default: false)
-        const standaloneMatch = content.match(/<task[^>]+standalone="true"/);
-        const standalone = !!standaloneMatch;
+          const descMatch = content.match(/description="([^"]+)"/);
+          const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
+          description = descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '';
+
+          const standaloneMatch = content.match(/<task[^>]+standalone="true"/);
+          standalone = !!standaloneMatch;
+        }
 
         // Build relative path for installation
         const installPath =
           moduleName === 'core' ? `${this.bmadFolderName}/core/tasks/${file}` : `${this.bmadFolderName}/${moduleName}/tasks/${file}`;
 
-        const taskName = file.replace(/\.(xml|md)$/, '');
         tasks.push({
-          name: taskName,
-          displayName: nameMatch ? nameMatch[1] : taskName,
+          name: name,
+          displayName: displayName,
           description: description.replaceAll('"', '""'),
           module: moduleName,
           path: installPath,
@@ -370,7 +433,7 @@ class ManifestGenerator {
         // Add to files list
         this.files.push({
           type: 'task',
-          name: taskName,
+          name: name,
           module: moduleName,
           path: installPath,
         });
@@ -411,26 +474,45 @@ class ManifestGenerator {
         const filePath = path.join(dirPath, file);
         const content = await fs.readFile(filePath, 'utf8');
 
-        // Extract tool metadata from content if possible
-        const nameMatch = content.match(/name="([^"]+)"/);
+        let name = file.replace(/\.(xml|md)$/, '');
+        let displayName = name;
+        let description = '';
+        let standalone = false;
 
-        // Try description attribute first, fall back to <objective> element
-        const descMatch = content.match(/description="([^"]+)"/);
-        const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
-        const description = descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '';
+        if (file.endsWith('.md')) {
+          // Parse YAML frontmatter for .md tools
+          const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
+          if (frontmatterMatch) {
+            try {
+              const frontmatter = yaml.parse(frontmatterMatch[1]);
+              name = frontmatter.name || name;
+              displayName = frontmatter.displayName || frontmatter.name || name;
+              description = frontmatter.description || '';
+              standalone = frontmatter.standalone === true || frontmatter.standalone === 'true';
+            } catch {
+              // If YAML parsing fails, use defaults
+            }
+          }
+        } else {
+          // For .xml tools, extract from tag attributes
+          const nameMatch = content.match(/name="([^"]+)"/);
+          displayName = nameMatch ? nameMatch[1] : name;
 
-        // Check for standalone attribute in <tool> tag (default: false)
-        const standaloneMatch = content.match(/<tool[^>]+standalone="true"/);
-        const standalone = !!standaloneMatch;
+          const descMatch = content.match(/description="([^"]+)"/);
+          const objMatch = content.match(/<objective>([^<]+)<\/objective>/);
+          description = descMatch ? descMatch[1] : objMatch ? objMatch[1].trim() : '';
+
+          const standaloneMatch = content.match(/<tool[^>]+standalone="true"/);
+          standalone = !!standaloneMatch;
+        }
 
         // Build relative path for installation
         const installPath =
           moduleName === 'core' ? `${this.bmadFolderName}/core/tools/${file}` : `${this.bmadFolderName}/${moduleName}/tools/${file}`;
 
-        const toolName = file.replace(/\.(xml|md)$/, '');
         tools.push({
-          name: toolName,
-          displayName: nameMatch ? nameMatch[1] : toolName,
+          name: name,
+          displayName: displayName,
           description: description.replaceAll('"', '""'),
           module: moduleName,
           path: installPath,
@@ -440,7 +522,7 @@ class ManifestGenerator {
         // Add to files list
         this.files.push({
           type: 'tool',
-          name: toolName,
+          name: name,
           module: moduleName,
           path: installPath,
         });
@@ -452,18 +534,71 @@ class ManifestGenerator {
 
   /**
    * Write main manifest as YAML with installation info only
+   * Fetches fresh version info for all modules
    * @returns {string} Path to the manifest file
    */
   async writeMainManifest(cfgDir) {
     const manifestPath = path.join(cfgDir, 'manifest.yaml');
 
+    // Read existing manifest to preserve install date
+    let existingInstallDate = null;
+    const existingModulesMap = new Map();
+
+    if (await fs.pathExists(manifestPath)) {
+      try {
+        const existingContent = await fs.readFile(manifestPath, 'utf8');
+        const existingManifest = yaml.parse(existingContent);
+
+        // Preserve original install date
+        if (existingManifest.installation?.installDate) {
+          existingInstallDate = existingManifest.installation.installDate;
+        }
+
+        // Build map of existing modules for quick lookup
+        if (existingManifest.modules && Array.isArray(existingManifest.modules)) {
+          for (const m of existingManifest.modules) {
+            if (typeof m === 'object' && m.name) {
+              existingModulesMap.set(m.name, m);
+            } else if (typeof m === 'string') {
+              existingModulesMap.set(m, { installDate: existingInstallDate });
+            }
+          }
+        }
+      } catch {
+        // If we can't read existing manifest, continue with defaults
+      }
+    }
+
+    // Fetch fresh version info for all modules
+    const { Manifest } = require('./manifest');
+    const manifestObj = new Manifest();
+    const updatedModules = [];
+
+    for (const moduleName of this.modules) {
+      // Get fresh version info from source
+      const versionInfo = await manifestObj.getModuleVersionInfo(moduleName, this.bmadDir);
+
+      // Get existing install date if available
+      const existing = existingModulesMap.get(moduleName);
+
+      updatedModules.push({
+        name: moduleName,
+        version: versionInfo.version,
+        installDate: existing?.installDate || new Date().toISOString(),
+        lastUpdated: new Date().toISOString(),
+        source: versionInfo.source,
+        npmPackage: versionInfo.npmPackage,
+        repoUrl: versionInfo.repoUrl,
+      });
+    }
+
     const manifest = {
       installation: {
         version: packageJson.version,
-        installDate: new Date().toISOString(),
+        installDate: existingInstallDate || new Date().toISOString(),
         lastUpdated: new Date().toISOString(),
       },
-      modules: this.modules, // Include ALL modules (standard and custom)
+      modules: updatedModules,
       ides: this.selectedIdes,
     };
 

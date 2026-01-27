@@ -128,7 +128,8 @@ function buildMenuXml(menuItems) {
   let xml = '  <menu>\n';
 
   // Always inject menu display option first
-  xml += `    <item cmd="*menu">[M] Redisplay Menu Options</item>\n`;
+  xml += `    <item cmd="MH or fuzzy match on menu or help">[MH] Redisplay Menu Help</item>\n`;
+  xml += `    <item cmd="CH or fuzzy match on chat">[CH] Chat with the Agent about anything</item>\n`;
 
   // Add user-defined menu items
   if (menuItems && menuItems.length > 0) {
@@ -141,11 +142,7 @@ function buildMenuXml(menuItems) {
       }
       // Handle legacy format menu items
       else if (item.trigger) {
-        // For legacy items, keep using cmd with *<trigger> format
         let trigger = item.trigger || '';
-        if (!trigger.startsWith('*')) {
-          trigger = '*' + trigger;
-        }
 
         const attrs = [`cmd="${trigger}"`];
 
@@ -161,8 +158,8 @@ function buildMenuXml(menuItems) {
     }
   }
 
-  // Always inject dismiss last
-  xml += `    <item cmd="*dismiss">[D] Dismiss Agent</item>\n`;
+  xml += `    <item cmd="PM or fuzzy match on party-mode" exec="{project-root}/_bmad/core/workflows/party-mode/workflow.md">[PM] Start Party Mode</item>\n`;
+  xml += `    <item cmd="DA or fuzzy match on exit, leave, goodbye or dismiss agent">[DA] Dismiss Agent</item>\n`;
 
   xml += '  </menu>\n';
 
@@ -482,38 +479,9 @@ function filterCustomizationData(data) {
 }
 
 /**
- * Process TTS injection markers in content
- * @param {string} content - Content to process
- * @param {boolean} enableAgentVibes - Whether AgentVibes is enabled
- * @returns {Object} { content: string, hadInjection: boolean }
- */
-function processTTSInjectionPoints(content, enableAgentVibes) {
-  const hasAgentTTS = content.includes('<!-- TTS_INJECTION:agent-tts -->');
-
-  if (enableAgentVibes && hasAgentTTS) {
-    // Replace agent-tts injection marker with TTS rule
-    content = content.replaceAll(
-      '<!-- TTS_INJECTION:agent-tts -->',
-      `- When responding to user messages, speak your responses using TTS:
-   Call: \`.claude/hooks/bmad-speak.sh '{agent-id}' '{response-text}'\` after each response
-   Replace {agent-id} with YOUR agent ID from <agent id="..."> tag at top of this file
-   Replace {response-text} with the text you just output to the user
-   IMPORTANT: Use single quotes as shown - do NOT escape special characters like ! or $ inside single quotes
-   Run in background (&) to avoid blocking`,
-    );
-    return { content, hadInjection: true };
-  } else if (!enableAgentVibes && hasAgentTTS) {
-    // Strip injection markers when disabled
-    content = content.replaceAll(/<!-- TTS_INJECTION:agent-tts -->\n?/g, '');
-  }
-
-  return { content, hadInjection: false };
-}
-
-/**
  * Compile agent file to .md
  * @param {string} yamlPath - Path to agent YAML file
- * @param {Object} options - { answers: {}, outputPath: string, enableAgentVibes: boolean }
+ * @param {Object} options - { answers: {}, outputPath: string }
  * @returns {Object} Compilation result
  */
 function compileAgentFile(yamlPath, options = {}) {
@@ -529,15 +497,6 @@ function compileAgentFile(yamlPath, options = {}) {
     outputPath = path.join(dir, `${basename}.md`);
   }
 
-  // Process TTS injection points if enableAgentVibes option is provided
-  let xml = result.xml;
-  let ttsInjected = false;
-  if (options.enableAgentVibes !== undefined) {
-    const ttsResult = processTTSInjectionPoints(xml, options.enableAgentVibes);
-    xml = ttsResult.content;
-    ttsInjected = ttsResult.hadInjection;
-  }
-
   // Write compiled XML
   fs.writeFileSync(outputPath, xml, 'utf8');
 
@@ -546,7 +505,6 @@ function compileAgentFile(yamlPath, options = {}) {
     xml,
     outputPath,
     sourcePath: yamlPath,
-    ttsInjected,
   };
 }
 

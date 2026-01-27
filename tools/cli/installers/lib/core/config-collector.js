@@ -2,9 +2,9 @@ const path = require('node:path');
 const fs = require('fs-extra');
 const yaml = require('yaml');
 const chalk = require('chalk');
-const inquirer = require('inquirer');
 const { getProjectRoot, getModulePath } = require('../../../lib/project-root');
 const { CLIUtils } = require('../../../lib/cli-utils');
+const prompts = require('../../../lib/prompts');
 
 class ConfigCollector {
   constructor() {
@@ -318,11 +318,11 @@ class ConfigCollector {
           this.allAnswers[`${moduleName}_user_name`] = this.getDefaultUsername();
         }
       }
-    }
 
-    // Show "no config" message for modules with no new questions (that have config keys)
-    console.log(chalk.dim(`  ✓ ${moduleName.toUpperCase()} module already up to date`));
-    return false; // No new fields
+      // Show "no config" message for modules with no new questions (that have config keys)
+      console.log(chalk.dim(`  ✓ ${moduleName.toUpperCase()} module already up to date`));
+      return false; // No new fields
+    }
 
     // If we have new fields (interactive or static), process them
     if (newKeys.length > 0 || newStaticKeys.length > 0) {
@@ -350,7 +350,7 @@ class ConfigCollector {
         // Only show header if we actually have questions
         CLIUtils.displayModuleConfigHeader(moduleName, moduleConfig.header, moduleConfig.subheader);
         console.log(); // Line break before questions
-        const promptedAnswers = await inquirer.prompt(questions);
+        const promptedAnswers = await prompts.prompt(questions);
 
         // Merge prompted answers with static answers
         Object.assign(allAnswers, promptedAnswers);
@@ -363,6 +363,13 @@ class ConfigCollector {
       Object.assign(this.allAnswers, allAnswers);
 
       // Process all answers (both static and prompted)
+      // First, copy existing config to preserve values that aren't being updated
+      if (this.existingConfig && this.existingConfig[moduleName]) {
+        this.collectedConfig[moduleName] = { ...this.existingConfig[moduleName] };
+      } else {
+        this.collectedConfig[moduleName] = {};
+      }
+
       for (const key of Object.keys(allAnswers)) {
         const originalKey = key.replace(`${moduleName}_`, '');
         const item = moduleConfig[originalKey];
@@ -377,9 +384,7 @@ class ConfigCollector {
           result = value;
         }
 
-        if (!this.collectedConfig[moduleName]) {
-          this.collectedConfig[moduleName] = {};
-        }
+        // Update the collected config with new/updated values
         this.collectedConfig[moduleName][originalKey] = result;
       }
     }
@@ -577,32 +582,29 @@ class ConfigCollector {
 
     // If there are questions to ask, prompt for accepting defaults vs customizing
     if (questions.length > 0) {
-      // Get friendly module name from config or use uppercase module name
       const moduleDisplayName = moduleConfig.header || `${moduleName.toUpperCase()} Module`;
-
-      // Add blank line for better readability
       console.log();
-
-      // Display the module name in color first
       console.log(chalk.cyan('?') + ' ' + chalk.magenta(moduleDisplayName));
+      let customize = true;
+      if (moduleName !== 'core') {
+        const customizeAnswer = await prompts.prompt([
+          {
+            type: 'confirm',
+            name: 'customize',
+            message: 'Accept Defaults (no to customize)?',
+            default: true,
+          },
+        ]);
+        customize = customizeAnswer.customize;
+      }
 
-      // Ask user if they want to accept defaults or customize on the next line
-      const { customize } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'customize',
-          message: 'Accept Defaults (no to customize)?',
-          default: true,
-        },
-      ]);
-
-      if (customize) {
+      if (customize && moduleName !== 'core') {
         // Accept defaults - only ask questions that have NO default value
         const questionsWithoutDefaults = questions.filter((q) => q.default === undefined || q.default === null || q.default === '');
 
         if (questionsWithoutDefaults.length > 0) {
           console.log(chalk.dim(`\n  Asking required questions for ${moduleName.toUpperCase()}...`));
-          const promptedAnswers = await inquirer.prompt(questionsWithoutDefaults);
+          const promptedAnswers = await prompts.prompt(questionsWithoutDefaults);
           Object.assign(allAnswers, promptedAnswers);
         }
 
@@ -616,9 +618,7 @@ class ConfigCollector {
           allAnswers[question.name] = question.default;
         }
       } else {
-        // Customize - ask all questions
-        console.log(chalk.dim(`\n  Configuring ${moduleName.toUpperCase()}...`));
-        const promptedAnswers = await inquirer.prompt(questions);
+        const promptedAnswers = await prompts.prompt(questions);
         Object.assign(allAnswers, promptedAnswers);
       }
     }
@@ -642,8 +642,6 @@ class ConfigCollector {
 
         // For arrays (multi-select), handle differently
         if (Array.isArray(value)) {
-          // If there's a result template and it's a string, don't use it for arrays
-          // Just use the array value directly
           result = value;
         } else if (item.result) {
           result = item.result;
@@ -658,11 +656,9 @@ class ConfigCollector {
               if (result === '{value}') {
                 result = value;
               } else {
-                // Otherwise replace in the string
                 result = result.replace('{value}', value);
               }
             } else {
-              // For non-string values, use directly
               result = value;
             }
 
@@ -700,10 +696,6 @@ class ConfigCollector {
                   for (const mod of Object.keys(this.collectedConfig)) {
                     if (mod !== '_meta' && this.collectedConfig[mod] && this.collectedConfig[mod][configKey]) {
                       configValue = this.collectedConfig[mod][configKey];
-                      // Extract just the value part if it's a result template
-                      if (typeof configValue === 'string' && configValue.includes('{project-root}/')) {
-                        configValue = configValue.replace('{project-root}/', '');
-                      }
                       break;
                     }
                   }
@@ -714,7 +706,6 @@ class ConfigCollector {
             }
           }
         } else {
-          // No result template, use value directly
           result = value;
         }
 
@@ -745,7 +736,7 @@ class ConfigCollector {
         console.log(chalk.cyan('?') + ' ' + chalk.magenta(moduleDisplayName));
 
         // Ask user if they want to accept defaults or customize on the next line
-        const { customize } = await inquirer.prompt([
+        const { customize } = await prompts.prompt([
           {
             type: 'confirm',
             name: 'customize',
@@ -818,10 +809,6 @@ class ConfigCollector {
         for (const mod of Object.keys(this.collectedConfig)) {
           if (mod !== '_meta' && this.collectedConfig[mod] && this.collectedConfig[mod][configKey]) {
             configValue = this.collectedConfig[mod][configKey];
-            // Remove {project-root}/ prefix if present for cleaner display
-            if (typeof configValue === 'string' && configValue.includes('{project-root}/')) {
-              configValue = configValue.replace('{project-root}/', '');
-            }
             break;
           }
         }
@@ -840,7 +827,7 @@ class ConfigCollector {
   }
 
   /**
-   * Build an inquirer question from a config item
+   * Build a prompt question from a config item
    * @param {string} moduleName - Module name
    * @param {string} key - Config key
    * @param {Object} item - Config item definition
@@ -1002,7 +989,7 @@ class ConfigCollector {
       message: message,
     };
 
-    // Set default - if it's dynamic, use a function that inquirer will evaluate with current answers
+    // Set default - if it's dynamic, use a function that the prompt will evaluate with current answers
     // But if we have an existing value, always use that instead
     if (existingValue !== null && existingValue !== undefined && questionType !== 'list') {
       question.default = existingValue;
