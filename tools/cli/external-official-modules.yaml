@@ -16,7 +16,7 @@ modules:
     url: https://github.com/bmad-code-org/bmad-module-creative-intelligence-suite
     module-definition: src/module.yaml
     code: cis
-    name: "BMad Creative Innovation Suite"
+    name: "BMad Creative Intelligence Suite"
     description: "Creative tools for writing, brainstorming, and more"
     defaultSelected: false
     type: bmad-org
@@ -26,19 +26,28 @@ modules:
     url: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
     module-definition: src/module.yaml
     code: gds
-    name: "BMad Game Dev Suite"
+    name: "BMad Game Dev Studio"
     description: "Game development agents and workflows"
     defaultSelected: false
     type: bmad-org
     npmPackage: bmad-game-dev-studio
 
-# TODO: Enable once fixes applied:
+  bmad-method-test-architecture-enterprise:
+    url: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
+    module-definition: src/module.yaml
+    code: tea
+    name: "Test Architect"
+    description: "Master Test Architect for quality strategy, test automation, and release gates"
+    defaultSelected: false
+    type: bmad-org
+    npmPackage: bmad-method-test-architecture-enterprise
 
-# whiteport-design-system:
-#   url: https://github.com/bmad-code-org/bmad-method-wds-expansion
-#   module-definition: src/module.yaml
-#   code: WDS
-#   name: "Whiteport UX Design System"
-#   description: "UX design framework with Figma integration"
-#   defaultSelected: false
-#   type: community
+  # whiteport-design-system:
+  #   url: https://github.com/bmad-code-org/bmad-method-wds-expansion
+  #   module-definition: src/module.yaml
+  #   code: wds
+  #   name: "Whiteport UX Design System"
+  #   description: "UX design framework with Figma integration"
+  #   defaultSelected: false
+  #   type: community
+  #   npmPackage: bmad-method-wds-expansion

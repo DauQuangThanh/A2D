@@ -1,7 +1,7 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const chalk = require('chalk');
 const { BaseIdeSetup } = require('./_base-ide');
+const prompts = require('../../../lib/prompts');
 const { AgentCommandGenerator } = require('./shared/agent-command-generator');
 const { WorkflowCommandGenerator } = require('./shared/workflow-command-generator');
 const { TaskToolCommandGenerator } = require('./shared/task-tool-command-generator');
@@ -34,10 +34,10 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    * @returns {Promise<Object>} Setup result
    */
   async setup(projectDir, bmadDir, options = {}) {
-    console.log(chalk.cyan(`Setting up ${this.name}...`));
+    if (!options.silent) await prompts.log.info(`Setting up ${this.name}...`);
 
     // Clean up any old BMAD installation first
-    await this.cleanup(projectDir);
+    await this.cleanup(projectDir, options);
 
     if (!this.installerConfig) {
       return { success: false, reason: 'no-config' };
@@ -66,6 +66,13 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    */
   async installToTarget(projectDir, bmadDir, config, options) {
     const { target_dir, template_type, artifact_types } = config;
+
+    // Skip targets with explicitly empty artifact_types array
+    // This prevents creating empty directories when no artifacts will be written
+    if (Array.isArray(artifact_types) && artifact_types.length === 0) {
+      return { success: true, results: { agents: 0, workflows: 0, tasks: 0, tools: 0 } };
+    }
+
     const targetPath = path.join(projectDir, target_dir);
     await this.ensureDir(targetPath);
 
@@ -86,15 +93,16 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       results.workflows = await this.writeWorkflowArtifacts(targetPath, artifacts, template_type, config);
     }
 
-    // Install tasks and tools
+    // Install tasks and tools using template system (supports TOML for Gemini, MD for others)
     if (!artifact_types || artifact_types.includes('tasks') || artifact_types.includes('tools')) {
-      const taskToolGen = new TaskToolCommandGenerator();
-      const taskToolResult = await taskToolGen.generateDashTaskToolCommands(projectDir, bmadDir, targetPath);
+      const taskToolGen = new TaskToolCommandGenerator(this.bmadFolderName);
+      const { artifacts } = await taskToolGen.collectTaskToolArtifacts(bmadDir);
+      const taskToolResult = await this.writeTaskToolArtifacts(targetPath, artifacts, template_type, config);
       results.tasks = taskToolResult.tasks || 0;
       results.tools = taskToolResult.tools || 0;
     }
 
-    this.printSummary(results, target_dir);
+    await this.printSummary(results, target_dir, options);
     return { success: true, results };
   }
 
@@ -132,12 +140,12 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
    */
   async writeAgentArtifacts(targetPath, artifacts, templateType, config = {}) {
     // Try to load platform-specific template, fall back to default-agent
-    const template = await this.loadTemplate(templateType, 'agent', config, 'default-agent');
+    const { content: template, extension } = await this.loadTemplate(templateType, 'agent', config, 'default-agent');
     let count = 0;
 
     for (const artifact of artifacts) {
       const content = this.renderTemplate(template, artifact);
-      const filename = this.generateFilename(artifact, 'agent');
+      const filename = this.generateFilename(artifact, 'agent', extension);
       const filePath = path.join(targetPath, filename);
       await this.writeFile(filePath, content);
       count++;
@@ -167,9 +175,10 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
 
         // Fall back to default templates if specific ones don't exist
         const finalTemplateType = artifact.isYamlWorkflow ? 'default-workflow-yaml' : 'default-workflow';
-        const template = await this.loadTemplate(workflowTemplateType, 'workflow', config, finalTemplateType);
+        // workflowTemplateType already contains full name (e.g., 'gemini-workflow-yaml'), so pass empty artifactType
+        const { content: template, extension } = await this.loadTemplate(workflowTemplateType, '', config, finalTemplateType);
         const content = this.renderTemplate(template, artifact);
-        const filename = this.generateFilename(artifact, 'workflow');
+        const filename = this.generateFilename(artifact, 'workflow', extension);
         const filePath = path.join(targetPath, filename);
         await this.writeFile(filePath, content);
         count++;
@@ -180,39 +189,99 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
   }
 
   /**
+   * Write task/tool artifacts to target directory using templates
+   * @param {string} targetPath - Target directory path
+   * @param {Array} artifacts - Task/tool artifacts
+   * @param {string} templateType - Template type to use
+   * @param {Object} config - Installation configuration
+   * @returns {Promise<Object>} Counts of tasks and tools written
+   */
+  async writeTaskToolArtifacts(targetPath, artifacts, templateType, config = {}) {
+    let taskCount = 0;
+    let toolCount = 0;
+
+    // Pre-load templates to avoid repeated file I/O in the loop
+    const taskTemplate = await this.loadTemplate(templateType, 'task', config, 'default-task');
+    const toolTemplate = await this.loadTemplate(templateType, 'tool', config, 'default-tool');
+
+    const { artifact_types } = config;
+
+    for (const artifact of artifacts) {
+      if (artifact.type !== 'task' && artifact.type !== 'tool') {
+        continue;
+      }
+
+      // Skip if the specific artifact type is not requested in config
+      if (artifact_types) {
+        if (artifact.type === 'task' && !artifact_types.includes('tasks')) continue;
+        if (artifact.type === 'tool' && !artifact_types.includes('tools')) continue;
+      }
+
+      // Use pre-loaded template based on artifact type
+      const { content: template, extension } = artifact.type === 'task' ? taskTemplate : toolTemplate;
+
+      const content = this.renderTemplate(template, artifact);
+      const filename = this.generateFilename(artifact, artifact.type, extension);
+      const filePath = path.join(targetPath, filename);
+      await this.writeFile(filePath, content);
+
+      if (artifact.type === 'task') {
+        taskCount++;
+      } else {
+        toolCount++;
+      }
+    }
+
+    return { tasks: taskCount, tools: toolCount };
+  }
+
+  /**
    * Load template based on type and configuration
    * @param {string} templateType - Template type (claude, windsurf, etc.)
    * @param {string} artifactType - Artifact type (agent, workflow, task, tool)
    * @param {Object} config - Installation configuration
    * @param {string} fallbackTemplateType - Fallback template type if requested template not found
-   * @returns {Promise<string>} Template content
+   * @returns {Promise<{content: string, extension: string}>} Template content and extension
    */
   async loadTemplate(templateType, artifactType, config = {}, fallbackTemplateType = null) {
     const { header_template, body_template } = config;
 
     // Check for separate header/body templates
     if (header_template || body_template) {
-      return await this.loadSplitTemplates(templateType, artifactType, header_template, body_template);
+      const content = await this.loadSplitTemplates(templateType, artifactType, header_template, body_template);
+      // Allow config to override extension, default to .md
+      const ext = config.extension || '.md';
+      const normalizedExt = ext.startsWith('.') ? ext : `.${ext}`;
+      return { content, extension: normalizedExt };
     }
 
-    // Load combined template
-    const templateName = `${templateType}-${artifactType}.md`;
-    const templatePath = path.join(__dirname, 'templates', 'combined', templateName);
+    // Load combined template - try multiple extensions
+    // If artifactType is empty, templateType already contains full name (e.g., 'gemini-workflow-yaml')
+    const templateBaseName = artifactType ? `${templateType}-${artifactType}` : templateType;
+    const templateDir = path.join(__dirname, 'templates', 'combined');
+    const extensions = ['.md', '.toml', '.yaml', '.yml'];
 
-    if (await fs.pathExists(templatePath)) {
-      return await fs.readFile(templatePath, 'utf8');
+    for (const ext of extensions) {
+      const templatePath = path.join(templateDir, templateBaseName + ext);
+      if (await fs.pathExists(templatePath)) {
+        const content = await fs.readFile(templatePath, 'utf8');
+        return { content, extension: ext };
+      }
     }
 
     // Fall back to default template (if provided)
     if (fallbackTemplateType) {
-      const fallbackPath = path.join(__dirname, 'templates', 'combined', `${fallbackTemplateType}.md`);
-      if (await fs.pathExists(fallbackPath)) {
-        return await fs.readFile(fallbackPath, 'utf8');
+      for (const ext of extensions) {
+        const fallbackPath = path.join(templateDir, `${fallbackTemplateType}${ext}`);
+        if (await fs.pathExists(fallbackPath)) {
+          const content = await fs.readFile(fallbackPath, 'utf8');
+          return { content, extension: ext };
+        }
       }
     }
 
     // Ultimate fallback - minimal template
-    return this.getDefaultTemplate(artifactType);
+    return { content: this.getDefaultTemplate(artifactType), extension: '.md' };
   }
 
   /**
@@ -269,6 +338,7 @@ class ConfigDrivenIdeSetup extends BaseIdeSetup {
       return `---
 name: '{{name}}'
 description: '{{description}}'
+disable-model-invocation: true
 ---
 
 You must fully embody this agent's persona and follow all activation instructions exactly as specified.
@@ -283,6 +353,7 @@ You must fully embody this agent's persona and follow all activation instruction
     return `---
 name: '{{name}}'
 description: '{{description}}'
+disable-model-invocation: true
 ---
 
 # {{name}}
@@ -300,10 +371,24 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
   renderTemplate(template, artifact) {
     // Use the appropriate path property based on artifact type
     let pathToUse = artifact.relativePath || '';
-    if (artifact.type === 'agent-launcher') {
-      pathToUse = artifact.agentPath || artifact.relativePath || '';
-    } else if (artifact.type === 'workflow-command') {
-      pathToUse = artifact.workflowPath || artifact.relativePath || '';
+    switch (artifact.type) {
+      case 'agent-launcher': {
+        pathToUse = artifact.agentPath || artifact.relativePath || '';
+
+        break;
+      }
+      case 'workflow-command': {
+        pathToUse = artifact.workflowPath || artifact.relativePath || '';
+
+        break;
+      }
+      case 'task':
+      case 'tool': {
+        pathToUse = artifact.path || artifact.relativePath || '';
+
+        break;
+      }
+      // No default
     }
 
     let rendered = template
@@ -326,13 +411,27 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * Generate filename for artifact
    * @param {Object} artifact - Artifact data
    * @param {string} artifactType - Artifact type (agent, workflow, task, tool)
+   * @param {string} extension - File extension to use (e.g., '.md', '.toml')
    * @returns {string} Generated filename
    */
-  generateFilename(artifact, artifactType) {
+  generateFilename(artifact, artifactType, extension = '.md') {
     const { toDashPath } = require('./shared/path-utils');
-    // toDashPath already handles the .agent.md suffix for agents correctly
-    // No need to add it again here
-    return toDashPath(artifact.relativePath);
+
+    // Reuse central logic to ensure consistent naming conventions
+    const standardName = toDashPath(artifact.relativePath);
+
+    // Clean up potential double extensions from source files (e.g. .yaml.md, .xml.md -> .md)
+    // This handles any extensions that might slip through toDashPath()
+    const baseName = standardName.replace(/\.(md|yaml|yml|json|xml|toml)\.md$/i, '.md');
+
+    // If using default markdown, preserve the bmad-agent- prefix for agents
+    if (extension === '.md') {
+      return baseName;
+    }
+
+    // For other extensions (e.g., .toml), replace .md extension
+    // Note: agent prefix is preserved even with non-markdown extensions
+    return baseName.replace(/\.md$/, extension);
   }
 
   /**
@@ -340,32 +439,38 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {Object} results - Installation results
    * @param {string} targetDir - Target directory (relative)
    */
-  printSummary(results, targetDir) {
-    console.log(chalk.green(`\n✓ ${this.name} configured:`));
-    if (results.agents > 0) {
-      console.log(chalk.dim(`  - ${results.agents} agents installed`));
-    }
-    if (results.workflows > 0) {
-      console.log(chalk.dim(`  - ${results.workflows} workflow commands generated`));
-    }
-    if (results.tasks > 0 || results.tools > 0) {
-      console.log(chalk.dim(`  - ${results.tasks + results.tools} task/tool commands generated`));
-    }
-    console.log(chalk.dim(`  - Destination: ${targetDir}`));
+  async printSummary(results, targetDir, options = {}) {
+    if (options.silent) return;
+    const parts = [];
+    if (results.agents > 0) parts.push(`${results.agents} agents`);
+    if (results.workflows > 0) parts.push(`${results.workflows} workflows`);
+    if (results.tasks > 0) parts.push(`${results.tasks} tasks`);
+    if (results.tools > 0) parts.push(`${results.tools} tools`);
+    await prompts.log.success(`${this.name} configured: ${parts.join(', ')} → ${targetDir}`);
   }
 
   /**
    * Cleanup IDE configuration
    * @param {string} projectDir - Project directory
    */
-  async cleanup(projectDir) {
+  async cleanup(projectDir, options = {}) {
     // Clean all target directories
     if (this.installerConfig?.targets) {
+      const parentDirs = new Set();
       for (const target of this.installerConfig.targets) {
-        await this.cleanupTarget(projectDir, target.target_dir);
+        await this.cleanupTarget(projectDir, target.target_dir, options);
+        // Track parent directories for empty-dir cleanup
+        const parentDir = path.dirname(target.target_dir);
+        if (parentDir && parentDir !== '.') {
+          parentDirs.add(parentDir);
+        }
+      }
+      // After all targets cleaned, remove empty parent directories (recursive up to projectDir)
+      for (const parentDir of parentDirs) {
+        await this.removeEmptyParents(projectDir, parentDir);
       }
     } else if (this.installerConfig?.target_dir) {
-      await this.cleanupTarget(projectDir, this.installerConfig.target_dir);
+      await this.cleanupTarget(projectDir, this.installerConfig.target_dir, options);
     }
   }
 
@@ -374,7 +479,7 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
    * @param {string} projectDir - Project directory
    * @param {string} targetDir - Target directory to clean
    */
-  async cleanupTarget(projectDir, targetDir) {
+  async cleanupTarget(projectDir, targetDir, options = {}) {
     const targetPath = path.join(projectDir, targetDir);
 
     if (!(await fs.pathExists(targetPath))) {
@@ -397,25 +502,57 @@ LOAD and execute from: {project-root}/{{bmadFolderName}}/{{path}}
     let removedCount = 0;
 
     for (const entry of entries) {
-      // Skip non-strings or undefined entries
       if (!entry || typeof entry !== 'string') {
         continue;
       }
       if (entry.startsWith('bmad')) {
         const entryPath = path.join(targetPath, entry);
-        const stat = await fs.stat(entryPath);
-        if (stat.isFile()) {
+        try {
           await fs.remove(entryPath);
           removedCount++;
-        } else if (stat.isDirectory()) {
-          await fs.remove(entryPath);
-          removedCount++;
+        } catch {
+          // Skip entries that can't be removed (broken symlinks, permission errors)
         }
       }
     }
 
+    if (removedCount > 0 && !options.silent) {
+      await prompts.log.message(`  Cleaned ${removedCount} BMAD files from ${targetDir}`);
+    }
+
+    // Remove empty directory after cleanup
     if (removedCount > 0) {
-      console.log(chalk.dim(`  Cleaned ${removedCount} BMAD files from ${targetDir}`));
+      try {
+        const remaining = await fs.readdir(targetPath);
+        if (remaining.length === 0) {
+          await fs.remove(targetPath);
+        }
+      } catch {
+        // Directory may already be gone or in use — skip
+      }
+    }
+  }
+  /**
+   * Recursively remove empty directories walking up from dir toward projectDir
+   * Stops at projectDir boundary — never removes projectDir itself
+   * @param {string} projectDir - Project root (boundary)
+   * @param {string} relativeDir - Relative directory to start from
+   */
+  async removeEmptyParents(projectDir, relativeDir) {
+    let current = relativeDir;
+    let last = null;
+    while (current && current !== '.' && current !== last) {
+      last = current;
+      const fullPath = path.join(projectDir, current);
+      try {
+        if (!(await fs.pathExists(fullPath))) break;
+        const remaining = await fs.readdir(fullPath);
+        if (remaining.length > 0) break;
+        await fs.rmdir(fullPath);
+      } catch {
+        break;
+      }
+      current = path.dirname(current);
     }
   }
 }

@@ -73,7 +73,7 @@ After searching, use the [feature request template](https://github.com/bmad-code
 
 ### Target Branch
 
-Submit PRs to the `main` branch.
+Submit PRs to the `main` branch. We use [trunk-based development](https://trunkbaseddevelopment.com/branch-for-release/): `main` is the trunk where all work lands, and stable release branches receive only cherry-picked fixes.
 
 ### PR Size
 
@@ -147,6 +147,15 @@ Keep messages under 72 characters. Each commit = one logical change.
 - Everything is natural language (markdown) — no code in core framework
 - Use BMad modules for domain-specific features
 - Validate YAML schemas: `npm run validate:schemas`
+- Validate file references: `npm run validate:refs`
+
+### File-Pattern-to-Validator Mapping
+
+| File Pattern | Validator | Extraction Function |
+| ------------ | --------- | ------------------- |
+| `*.yaml`, `*.yml` | `validate-file-refs.js` | `extractYamlRefs` |
+| `*.md`, `*.xml` | `validate-file-refs.js` | `extractMarkdownRefs` |
+| `*.csv` | `validate-file-refs.js` | `extractCsvRefs` |
 
 ---
 

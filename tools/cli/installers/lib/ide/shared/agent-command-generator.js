@@ -1,14 +1,13 @@
 const path = require('node:path');
 const fs = require('fs-extra');
-const chalk = require('chalk');
-const { toColonPath, toDashPath, customAgentColonName, customAgentDashName } = require('./path-utils');
+const { toColonPath, toDashPath, customAgentColonName, customAgentDashName, BMAD_FOLDER_NAME } = require('./path-utils');
 
 /**
  * Generates launcher command files for each agent
  * Similar to WorkflowCommandGenerator but for agents
  */
 class AgentCommandGenerator {
-  constructor(bmadFolderName = 'bmad') {
+  constructor(bmadFolderName = BMAD_FOLDER_NAME) {
     this.templatePath = path.join(__dirname, '../templates/agent-command-template.md');
     this.bmadFolderName = bmadFolderName;
   }
@@ -32,7 +31,9 @@ class AgentCommandGenerator {
       // Use relativePath if available (for nested agents), otherwise just name with .md
       const agentPathInModule = agent.relativePath || `${agent.name}.md`;
       // Calculate the relative agent path (e.g., bmm/agents/pm.md)
-      let agentRelPath = agent.path;
+      let agentRelPath = agent.path || '';
+      // Normalize path separators for cross-platform compatibility
+      agentRelPath = agentRelPath.replaceAll('\\', '/');
       // Remove _bmad/ prefix if present to get relative path from project root
       // Handle both absolute paths (/path/to/_bmad/...) and relative paths (_bmad/...)
       if (agentRelPath.includes('_bmad/')) {
@@ -132,9 +133,9 @@ class AgentCommandGenerator {
 
   /**
    * Write agent launcher artifacts using dash format (NEW STANDARD)
-   * Creates flat files like: bmad-bmm-pm.agent.md
+   * Creates flat files like: bmad-agent-bmm-pm.md
    *
-   * The .agent.md suffix distinguishes agents from workflows/tasks/tools.
+   * The bmad-agent- prefix distinguishes agents from workflows/tasks/tools.
    *
    * @param {string} baseCommandsDir - Base commands directory for the IDE
    * @param {Array} artifacts - Agent launcher artifacts
@@ -145,7 +146,7 @@ class AgentCommandGenerator {
 
     for (const artifact of artifacts) {
       if (artifact.type === 'agent-launcher') {
-        // Convert relativePath to dash format: bmm/agents/pm.md → bmad-bmm-pm.agent.md
+        // Convert relativePath to dash format: bmm/agents/pm.md → bmad-agent-bmm-pm.md
         const flatName = toDashPath(artifact.relativePath);
         const launcherPath = path.join(baseCommandsDir, flatName);
         await fs.ensureDir(path.dirname(launcherPath));

@@ -1,5 +1,6 @@
 ---
 title: "Documentation Style Guide"
+description: Project-specific documentation conventions based on Google style and Diataxis structure
 ---
 
 This project adheres to the [Google Developer Documentation Style Guide](https://developers.google.com/style) and uses [Diataxis](https://diataxis.fr/) to structure content. Only project-specific conventions follow.
@@ -74,10 +75,12 @@ Show in "What You've Accomplished" sections:
 ````md
 ```
 your-project/
-├── _bmad/                         # BMad configuration
+├── _bmad/                                   # BMad configuration
 ├── _bmad-output/
-│   ├── PRD.md                     # Your requirements document
-│   └── bmm-workflow-status.yaml   # Progress tracking
+│   ├── planning-artifacts/
+│   │   └── PRD.md                           # Your requirements document
+│   ├── implementation-artifacts/
+│   └── project-context.md                   # Implementation rules (optional)
 └── ...
 ```
 ````
@@ -141,13 +144,13 @@ your-project/
 
 ### Types
 
-| Type              | Example                      |
-| ----------------- | ---------------------------- |
-| **Index/Landing** | `core-concepts/index.md`     |
-| **Concept**       | `what-are-agents.md`         |
-| **Feature**       | `quick-flow.md`              |
-| **Philosophy**    | `why-solutioning-matters.md` |
-| **FAQ**           | `brownfield-faq.md`          |
+| Type              | Example                       |
+| ----------------- | ----------------------------- |
+| **Index/Landing** | `core-concepts/index.md`      |
+| **Concept**       | `what-are-agents.md`          |
+| **Feature**       | `quick-flow.md`               |
+| **Philosophy**    | `why-solutioning-matters.md`  |
+| **FAQ**           | `established-projects-faq.md` |
 
 ### General Template
 
@@ -325,7 +328,7 @@ Add italic context at definition start for limited-scope terms:
 - `*BMad Method/Enterprise.*`
 - `*Phase N.*`
 - `*BMGD.*`
-- `*Brownfield.*`
+- `*Established projects.*`
 
 ### Glossary Checklist
 

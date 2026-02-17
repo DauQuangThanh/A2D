@@ -1,19 +1,23 @@
 ---
 title: "Workflow Map"
 description: Visual reference for BMad Method workflow phases and outputs
+sidebar:
+  order: 1
 ---
 
 The BMad Method (BMM) is a module in the BMad Ecosystem, targeted at following the best practices of context engineering and planning. AI agents work best with clear, structured context. The BMM system builds that context progressively across 4 distinct phases - each phase, and multiple workflows optionally within each phase, produce documents that inform the next, so agents always know what to build and why.
 
 The rationale and concepts come from agile methodologies that have been used across the industry with great success as a mental framework.
 
-If at anytime you are unsure what to do, the `/bmad-help` command will help you stay on track or know what to do next. You can always refer to this for reference also - but /bmad-help is fully interactive and much quicker if you have already installed the BMadMethod. Additionally, if you are using different modules that have extended the BMad Method or added other complimentary non extension modules - the /bmad-help evolves to know all that is available to give you the best in the moment advice.
+If at any time you are unsure what to do, the `/bmad-help` command will help you stay on track or know what to do next. You can always refer to this for reference also - but /bmad-help is fully interactive and much quicker if you have already installed the BMad Method. Additionally, if you are using different modules that have extended the BMad Method or added other complementary non-extension modules - the /bmad-help evolves to know all that is available to give you the best in-the-moment advice.
 
 Final important note: Every workflow below can be run directly with your tool of choice via slash command or by loading an agent first and using the entry from the agents menu.
 
-<iframe src="/workflow-map-diagram.html" width="100%" height="100%" frameborder="0" style="border-radius: 8px; border: 1px solid #334155; min-height: 900px;"></iframe>
+<iframe src="/workflow-map-diagram.html" title="BMad Method Workflow Map Diagram" width="100%" height="100%" style="border-radius: 8px; border: 1px solid #334155; min-height: 900px;"></iframe>
 
-*[Interactive diagram - hover over outputs to see artifact flows]*
+<p style="font-size: 0.8rem; text-align: right; margin-top: -0.5rem; margin-bottom: 1rem;">
+  <a href="/workflow-map-diagram.html" target="_blank" rel="noopener noreferrer">Open diagram in new tab ↗</a>
+</p>
 
 ## Phase 1: Analysis (Optional)
 
@@ -21,7 +25,7 @@ Explore the problem space and validate ideas before committing to planning.
 
 | Workflow               | Purpose                                                                    | Produces                  |
 | ---------------------- | -------------------------------------------------------------------------- | ------------------------- |
-| `brainstorm`           | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
+| `brainstorming`        | Brainstorm Project Ideas with guided facilitation of a brainstorming coach | `brainstorming-report.md` |
 | `research`             | Validate market, technical, or domain assumptions                          | Research findings         |
 | `create-product-brief` | Capture strategic vision                                                   | `product-brief.md`        |
 
@@ -53,9 +57,12 @@ Build it, one story at a time.
 | `sprint-planning` | Initialize tracking (once per project) | `sprint-status.yaml`          |
 | `create-story`    | Prepare next story for implementation  | `story-[slug].md`             |
 | `dev-story`       | Implement the story                    | Working code + tests          |
+| `automate` (QA)   | Generate tests for existing features   | Test suite                    |
 | `code-review`     | Validate implementation quality        | Approved or changes requested |
 | `correct-course`  | Handle significant mid-sprint changes  | Updated plan or re-routing    |
 | `retrospective`   | Review after epic completion           | Lessons learned               |
+
+**Quinn (QA Agent):** Built-in QA agent for test automation. Trigger with `QA` or `bmad-bmm-qa-automate`. Generates standard API and E2E tests using your project's test framework. Beginner-friendly, no configuration needed. For advanced test strategy, install [Test Architect (TEA)](https://bmad-code-org.github.io/bmad-method-test-architecture-enterprise/) module.
 
 ## Quick Flow (Parallel Track)
 
@@ -70,14 +77,46 @@ Skip phases 1-3 for small, well-understood work.
 
 Each document becomes context for the next phase. The PRD tells the architect what constraints matter. The architecture tells the dev agent which patterns to follow. Story files give focused, complete context for implementation. Without this structure, agents make inconsistent decisions.
 
-For brownfield projects, `document-project` creates or updates `project-context.md` - what exists in the codebase and the rules all implementation workflows must observe. Run it just before Phase 4, and again when something significant changes - structure, architecture, or those rules. You can also edit `project-context.md` by hand.
+### Project Context
 
-All implementation workflows load `project-context.md` if it exists. Additional context per workflow:
+:::tip[Recommended]
+Create `project-context.md` to ensure AI agents follow your project's rules and preferences. This file works like a constitution for your project — it guides implementation decisions across all workflows.
+:::
 
-| Workflow       | Also Loads                   |
-| -------------- | ---------------------------- |
+**When to create it:**
+
+| Scenario | Approach |
+|----------|----------|
+| Before architecture (manual) | Document technical preferences you want the architect to respect |
+| After architecture | Generate it to capture decisions made during solutioning |
+| Existing projects | Run `generate-project-context` to discover established patterns |
+| Quick Flow | Create before `quick-dev` to ensure consistent implementation |
+
+**How to create it:**
+
+- **Manually** — Create `_bmad-output/project-context.md` with your technology stack and implementation rules
+- **Generate it** — Run `/bmad-bmm-generate-project-context` to auto-generate from your architecture or codebase
+
+**What workflows load it:**
+
+| Workflow | Purpose |
+|----------|---------|
+| `create-architecture` | Respects technical preferences when designing |
+| `create-story` | Informs story creation with project patterns |
+| `dev-story` | Guides implementation decisions |
+| `code-review` | Validates against project standards |
+| `quick-dev` | Applies patterns when implementing |
+
+[**Learn more about project-context.md**](../explanation/project-context.md)
+
+### Additional Context by Workflow
+
+Beyond `project-context.md`, each workflow loads specific documents:
+
+| Workflow | Also Loads |
+|----------|------------|
 | `create-story` | epics, PRD, architecture, UX |
-| `dev-story`    | story file                   |
-| `code-review`  | architecture, story file     |
-| `quick-spec`   | planning docs (if exist)     |
-| `quick-dev`    | tech-spec                    |
+| `dev-story` | story file |
+| `code-review` | architecture, story file |
+| `quick-spec` | planning docs (if exist) |
+| `quick-dev` | tech-spec |

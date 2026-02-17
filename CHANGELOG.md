@@ -1,5 +1,226 @@
 # Changelog
 
+## [6.0.0]
+
+V6 Stable Release! The End of Beta!
+
+### 🎁 Features
+
+* Add PRD workflow steps 2b (vision/differentiators) and 2c (executive summary) for more complete product requirements documentation
+* Add new `bmad uninstall` command with interactive and non-interactive modes for selective component removal
+* Add dedicated GitHub Copilot installer that generates enriched `.agent.md`, `.prompt.md` files and project configuration
+* Add TEA browser automation prerequisite prompts to guide Playwright CLI/MCP setup after configuration
+
+### 🐛 Bug Fixes
+
+* Fix version comparison to use semantic versioning, preventing incorrect downgrade recommendations to older beta versions
+* Fix `--custom-content` flag to properly populate sources and selected files in module config
+* Fix module configuration UX messaging to show accurate completion status and improve feedback timing
+* Fix changelog URL in installer start message for proper GitHub resolution
+* Remove incorrect `mode: primary` from OpenCode agent template and restore `name` field across all templates
+* Auto-discover PRD files in validate-prd workflow to reduce manual path input
+* Fix installer non-interactive mode hanging and improve IDE configuration handling during updates
+* Fix workflow-level config.yaml copying for custom content modules
+
+### ♻️ Refactoring
+
+* Remove alias variables from Phase 4 workflows, use canonical `{implementation_artifacts}` and `{planning_artifacts}`
+* Add missing `project_context` references to workflows for consistency
+
+### 📚 Documentation
+
+* Add post-install notes documentation for modules
+* Improve project-context documentation and fix folder structure
+* Add BMad Builder link to index for extenders
+
+---
+
+## [6.0.0-Beta.8]
+
+**Release: February 8, 2026**
+
+### 🌟 Key Highlights
+
+1. **Non-Interactive Installation** — Full CI/CD support with 10 new CLI flags for automated deployments
+2. **Complete @clack/prompts Migration** — Unified CLI experience with consolidated installer output
+3. **CSV File Reference Validation** — Extended Layer 1 validator to catch broken workflow references in CSV files
+4. **Kiro IDE Support** — Standardized config-driven installation, replacing custom installer
+
+### 🎁 Features
+
+* **Non-Interactive Installation** — Added `--directory`, `--modules`, `--tools`, `--custom-content`, `--user-name`, `--communication-language`, `--document-output-language`, `--output-folder`, and `-y/--yes` flags for CI/CD automation (#1520)
+* **CSV File Reference Validation** — Extended validator to scan `.csv` files for broken workflow references, checking 501 references across 212 files (#1573)
+* **Kiro IDE Support** — Replaced broken custom installer with config-driven templates using `#[[file:...]]` syntax and `inclusion: manual` frontmatter (#1589)
+* **OpenCode Template Consolidation** — Combined split templates with `mode: primary` frontmatter for Tab-switching support, fixing agent discovery (#1556)
+* **Modules Reference Page** — Added official external modules reference documentation (#1540)
+
+### 🐛 Bug Fixes
+
+* **Installer Streamlining** — Removed "None - Skip module installation" option, eliminated ~100 lines of dead code, and added ESM/.cjs support for module installers (#1590)
+* **CodeRabbit Workflow** — Changed `pull_request` to `pull_request_target` to fix 403 errors and enable reviews on fork PRs (#1583)
+* **Party Mode Return Protocol** — Added RETURN PROTOCOL to prevent lost-in-the-middle failures after Party Mode completes (#1569)
+* **Spacebar Toggle** — Fixed SPACE key not working in autocomplete multiselect prompts for tool/IDE selection (#1557)
+* **OpenCode Agent Routing** — Fixed agents installing to wrong directory by adding `targets` array for routing `.opencode/agent/` vs `.opencode/command/` (#1549)
+* **Technical Research Workflow** — Fixed step-05 routing to step-06 and corrected `stepsCompleted` values (#1547)
+* **Forbidden Variable Removal** — Removed `workflow_path` variable from 16 workflow step files (#1546)
+* **Kilo Installer** — Fixed YAML formatting issues by trimming activation header and converting to yaml.parse/stringify (#1537)
+* **bmad-help** — Now reads project-specific docs and respects `communication_language` setting (#1535)
+* **Cache Errors** — Removed `--prefer-offline` npm flag to prevent stale cache errors during installation (#1531)
+
+### ♻️ Refactoring
+
+* **Complete @clack/prompts Migration** — Migrated 24 files from legacy libraries (ora, chalk, boxen, figlet, etc.), replaced ~100 console.log+chalk calls, consolidated installer output to single spinner, and removed 5 dependencies (#1586)
+* **Downloads Page Removal** — Removed downloads page, bundle generation, and archiver dependency in favor of GitHub's native archives (#1577)
+* **Workflow Verb Standardization** — Replaced "invoke/run" with "load and follow/load" in review workflow prompts (#1570)
+* **Documentation Language** — Renamed "brownfield" to "established projects" and flattened directory structure for accessibility (#1539)
+
+### 📚 Documentation
+
+* **Comprehensive Site Review** — Fixed broken directory tree diagram, corrected grammar/capitalization, added SEO descriptions, and reordered how-to guides (#1578)
+* **SEO Metadata** — Added description front matter to 9 documentation pages for search engine optimization (#1566)
+* **PR Template** — Added pull request template for consistent PR descriptions (#1554)
+* **Manual Release Cleanup** — Removed broken manual-release workflow and related scripts (#1576)
+
+### 🔧 Maintenance
+
+* **Dual-Mode AI Code Review** — Configured Augment Code (audit mode) and CodeRabbit (adversarial mode) for improved code quality (#1511)
+* **Package-Lock Sync** — Cleaned up 471 lines of orphaned dependencies after archiver removal (#1580)
+
+---
+
+## [6.0.0-Beta.7]
+
+**Release: February 4, 2026**
+
+### 🌟 Key Highlights
+
+1. **Direct Workflow Invocation** — Agent workflows can now be run directly via slash commands instead of only through agent orchestration
+2. **Installer Workflow Support** — Installer now picks up `workflow-*.md` files, enabling multiple workflow files per directory
+
+### 🎁 Features
+
+* **Slash Command Workflow Access** — Research and PRD workflows now accessible via direct slash commands: `/domain-research`, `/market-research`, `/technical-research`, `/create-prd`, `/edit-prd`, `/validate-prd` (bd620e38, 731bee26)
+* **Version Checking** — CLI now checks npm for newer versions and displays a warning banner when updates are available (d37ee7f2)
+
+### ♻️ Refactoring
+
+* **Workflow File Splitting** — Split monolithic `workflow.md` files into specific `workflow-*.md` files for individual workflow invocation (bd620e38)
+* **Installer Multi-Workflow Support** — Installer manifest generator now supports `workflow-*.md` pattern, allowing multiple workflow files per directory (731bee26)
+* **Internal Skill Renaming** — Renamed internal project skills to use `bmad-os-` prefix for consistent naming (5276d58b)
+
+---
+
+## [6.0.0-Beta.6]
+
+**Release: February 4, 2026**
+
+### 🌟 Key Highlights
+
+1. **Cross-File Reference Validator**: Comprehensive tool to detect broken file references, preventing 59 known bugs (~25% of historical issues)
+2. **New AutocompleteMultiselect Prompt**: Searchable multi-select with improved tool/IDE selection UX
+3. **Critical Installer Fixes**: Windows CRLF parsing, Gemini CLI TOML support, file extension preservation
+4. **Codebase Cleanup**: Removed dead Excalidraw/flattener artifacts (-3,798 lines)
+
+### 🎁 Features
+
+* **Cross-File Reference Validator** — Validates ~483 references across ~217 source files, detecting absolute path leaks and broken references (PR #1494)
+* **AutocompleteMultiselect Prompt** — Upgraded `@clack/prompts` to v1.0.0 with custom searchable multiselect, Tab-to-fill-placeholder behavior, and improved tool/IDE selection UX (PR #1514)
+* **OT Domains** — Added `process_control` and `building_automation` domains with high complexity ratings (PR #1510)
+* **Documentation Reference Pages** — Added `docs/reference/agents.md`, `commands.md`, and `testing.md` (PR #1525)
+
+### 🐛 Bug Fixes
+
+* **Critical Installer Fixes** — Fixed CRLF line ending parsing on Windows, Gemini CLI TOML support, file extension preservation, Codex task generation, Windows path handling, and CSV parsing (PR #1492)
+* **Double Tool Questioning** — Removed redundant tool questioning during installation (df176d42)
+* **QA Agent Rename** — Renamed Quinn agent to `qa` for naming consistency (PR #1508)
+* **Documentation Organization** — Fixed documentation ordering and links, hide BMGD pages from main LLM docs (PR #1525)
+
+### ♻️ Refactoring
+
+* **Excalidraw/Flattener Removal** — Removed dead artifacts no longer supported beyond beta: Excalidraw workflows, flattener tool, and 12+ diagram creation workflows (-3,798 lines) (f699a368)
+* **Centralized Constants** — Centralized `BMAD_FOLDER_NAME` to reduce hardcoded strings (PR #1492)
+* **Cross-Platform Paths** — Fixed path separator inconsistencies in agent IDs (PR #1492)
+
+### 📚 Documentation
+
+* **BMGD Diataxis Refactor** — Refactored BMGD documentation using Diataxis principles for better organization (PR #1502)
+* **Generate Project Context** — Restored `generate-project-context` workflow for brownfield project analysis (PR #1491)
+
+### 🔧 Maintenance
+
+* **Dependency Updates** — Upgraded `@clack/prompts` from v0.11.0 to v1.0.0 and added `@clack/core` (PR #1514)
+* **CI Integration** — Added `validate:refs` to CI quality workflow with warning annotations (PR #1494)
+
+---
+
+## [6.0.0-Beta.5]
+
+### 🎁 Features
+
+* **Add generate-project-context workflow** — New 3-step workflow for project context generation, integrated with quick-flow-solo-dev agent
+* **Shard market research customer analysis** — Refactor monolithic customer insights into 4-step detailed customer behavior analysis workflow
+
+### 🐛 Bug Fixes
+
+* **Fix npm install peer dependency issues** — Add `.npmrc` with `legacy-peer-deps=true`, update Starlight to 0.37.5, and add `--legacy-peer-deps` flag to module installer (PR #1476)
+* **Fix leaked source paths in PRD validation report** — Replace absolute `/src/core/` paths with `{project-root}/_bmad/core/` (#1481)
+* **Fix orphaned market research customer analysis** — Connect step-01-init to step-02-customer-behavior to complete workflow sharding (#1486)
+* **Fix duplicate 2-letter brainstorming code** — Change BS to BSP to resolve conflict with cis Brainstorming module
+* **Fix tech writer sidecar functionality** — Enable proper sidecar operation (#1487)
+* **Fix relative paths in workflow steps** — Correct paths in step-11-polish (#1497) and step-e-04-complete (#1498)
+* **Fix party-mode workflow file extension** — Correct extension in workflow.xml (#1499)
+* **Fix generated slash commands** — Add `disable-model-invocation` to all generated commands (#1501)
+* **Fix agent scan and help CSV files** — Correct module-help.csv entries
+* **Fix HELP_STEP placeholder replacement** — Fix placeholder not replaced in compiled agents, fix hardcoded path, fix single quote (#1437)
+
+### 📚 Documentation
+
+* **Add exact slash commands to Getting Started guide** — Provide precise command examples for users (#1505)
+* **Remove .claude/commands from version control** — Commands are generated, not tracked (#1506)
+
+### 🔧 Maintenance
+
+* **Update Starlight to 0.37.5** — Latest version with peer dependency compatibility
+* **Add GitHub issue templates** — New bug-report.yaml and documentation.yaml templates
+
+---
+
+## [6.0.0-Beta.4]
+
+### 🐛 Bug Fixes
+
+- **Activation steps formatting fix**: Fixed missing opening quote that caused infrequent menu rendering issues
+- **Custom module installation fix**: Added missing yaml require in manifest.js to fix custom module installation
+
+---
+
+## [6.0.0-Beta.3]
+
+### 🌟 Key Highlights
+
+1. **SDET Module Replaces TEA**: TEA module removed from core, SDET module added with "automate" workflow for test automation
+2. **Gemini CLI TOML Support**: IDE integration now supports the TOML config format used by Gemini CLI
+3. **File System Sprint Status**: Default project_key support for file-system based sprint status tracking
+
+### 🔧 Features & Improvements
+
+**Module Changes:**
+- **TEA Module Moved to External** (#1430, #1443): The TEA module is now external. SDET module added with a single "automate" workflow focused on test automation
+- **SDET Module**: New module with streamlined test automation capabilities
+
+**IDE Integration:**
+- **Gemini CLI TOML Format** (#1431): Previous update accidentally switched Gemini to md instead of toml.
+
+**Sprint Status:**
+- **Default project_key** (#1446): File-system based sprint status now uses a default project_key so certain LLMs do not complain
+
+### 🐛 Bug Fixes
+
+- **Quick-flow workflow path fix** (#1368): Fixed incorrect workflow_path in bmad-quick-flow/quick-spec steps (step-01, step-02, step-03) - changed from non-existent 'create-tech-spec' to correct 'quick-spec'
+- **PRD edit flow paths**: Fixed path references in PRD editing workflow
+- **Agent file handling**: Changes to prevent double agent files and use .agent.md file extensions
+- **README link fix**: Corrected broken documentation links
+
 ## [6.0.0-Beta.2]
 
 - Fix installer so commands match what is installed, centralize most ide into a central file instead of separate files for each ide.
@@ -1133,7 +1354,6 @@ Located in `src/modules/bmb/workflows/agent/data/`:
 
 - **Workflow Vendoring**: Web bundler performs automatic cross-module dependency vendoring
 - **BMGD Module Extraction**: Game development split into standalone 4-phase structure
-- **Enhanced Dependency Resolution**: Better handling of web_bundle: false workflows
 - **Advanced Elicitation Fix**: Added missing CSV files to workflow bundles
 - **Claude Code Fix**: Resolved README slash command installation regression
 

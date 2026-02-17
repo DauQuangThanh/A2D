@@ -4,7 +4,7 @@ import starlight from '@astrojs/starlight';
 import sitemap from '@astrojs/sitemap';
 import rehypeMarkdownLinks from './src/rehype-markdown-links.js';
 import rehypeBasePaths from './src/rehype-base-paths.js';
-import { getSiteUrl } from './src/lib/site-url.js';
+import { getSiteUrl } from './src/lib/site-url.mjs';
 
 const siteUrl = getSiteUrl();
 const urlParts = new URL(siteUrl);
@@ -110,41 +110,7 @@ export default defineConfig({
           collapsed: true,
           autogenerate: { directory: 'reference' },
         },
-        {
-          label: 'TEA - Testing in BMAD',
-          collapsed: true,
-          items: [
-            {
-              label: 'Tutorials',
-              autogenerate: { directory: 'tea/tutorials' },
-            },
-            {
-              label: 'How-To Guides',
-              items: [
-                {
-                  label: 'Workflows',
-                  autogenerate: { directory: 'tea/how-to/workflows' },
-                },
-                {
-                  label: 'Customization',
-                  autogenerate: { directory: 'tea/how-to/customization' },
-                },
-                {
-                  label: 'Brownfield',
-                  autogenerate: { directory: 'tea/how-to/brownfield' },
-                },
-              ],
-            },
-            {
-              label: 'Explanation',
-              autogenerate: { directory: 'tea/explanation' },
-            },
-            {
-              label: 'Reference',
-              autogenerate: { directory: 'tea/reference' },
-            },
-          ],
-        },
+        // TEA docs moved to standalone module site; keep BMM sidebar focused.
       ],
 
       // Credits in footer
