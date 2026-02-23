@@ -22,6 +22,16 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 
 [Learn more at **docs.bmad-method.org**](http://docs.bmad-method.org)
 
+---
+
+## 🚀 What's Next for BMad?
+
+**V6 is here and we're just getting started!** The BMad Method is evolving rapidly with optimizations including Cross Platform Agent Team and Sub Agent inclusion, Skills Architecture, BMad Builder v1, Dev Loop Automation, and so much more in the works.
+
+**[📍 Check out the complete Roadmap →](http://docs.bmad-method.org/roadmap/)**
+
+---
+
 ## Quick Start
 
 **Prerequisites**: [Node.js](https://nodejs.org) v20+
@@ -30,7 +40,9 @@ Traditional AI tools do the thinking for you, producing average results. BMad ag
 npx bmad-method install
 ```
 
-Follow the installer prompts, then open your AI IDE (Claude Code, Codex, Windsurf, etc.) in your project folder.
+> If you are getting a stale beta version, use: `npx bmad-method@6.0.1 install`
+
+Follow the installer prompts, then open your AI IDE (Claude Code, Cursor, etc.) in your project folder.
 
 **Non-Interactive Installation** (for CI/CD):
 

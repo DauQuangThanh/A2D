@@ -7,12 +7,20 @@ The BMad Method (**B**reakthrough **M**ethod of **A**gile AI **D**riven Developm
 
 If you're comfortable working with AI coding assistants like Claude, Cursor, or GitHub Copilot, you're ready to get started.
 
+:::note[🚀 V6 is Here and We're Just Getting Started!]
+Skills Architecture, BMad Builder v1, Dev Loop Automation, and so much more in the works. **[Check out the Roadmap →](/roadmap/)**
+:::
+
 ## New Here? Start with a Tutorial
 
 The fastest way to understand BMad is to try it.
 
 - **[Get Started with BMad](./tutorials/getting-started.md)** — Install and understand how BMad works
-- **[Workflow Map](./reference/workflow-map.md)** — Visual overview of BMM phases, workflows, and context management.
+- **[Workflow Map](./reference/workflow-map.md)** — Visual overview of BMM phases, workflows, and context management
+
+:::tip[Just Want to Dive In?]
+Install BMad and run `/bmad-help` — it will guide you through everything based on your project and installed modules.
+:::
 
 ## How to Use These Docs
 
@@ -35,9 +43,7 @@ BMad works with any AI coding assistant that supports custom system prompts or p
 
 - **[Claude Code](https://code.claude.com)** — Anthropic's CLI tool (recommended)
 - **[Cursor](https://cursor.sh)** — AI-first code editor
-- **[Windsurf](https://codeium.com/windsurf)** — Codeium's AI IDE
-- **[Kiro](https://kiro.dev)** — Amazon's AI-powered IDE
-- **[Roo Code](https://roocode.com)** — VS Code extension
+- **[Codex CLI](https://github.com/openai/codex)** — OpenAI's terminal coding agent
 
 You should be comfortable with basic software development concepts like version control, project structure, and agile workflows. No prior experience with BMad-style agent systems is required—that's what these docs are for.
 
