@@ -206,7 +206,9 @@ class IdeManager {
         if (handlerResult.tools > 0) parts.push(`${handlerResult.tools} tools`);
         detail = parts.join(', ');
       }
-      return { success: true, ide: ideName, detail, handlerResult };
+      // Propagate handler's success status (default true for backward compat)
+      const success = handlerResult?.success !== false;
+      return { success, ide: ideName, detail, error: handlerResult?.error, handlerResult };
     } catch (error) {
       await prompts.log.error(`Failed to setup ${ideName}: ${error.message}`);
       return { success: false, ide: ideName, error: error.message };
